@@ -1,0 +1,54 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+
+# Uploaded resumes and runtime storage (never commit real resumes)
+storage/
+backend/storage/
+uploads/
+
+# Datasets (downloaded locally; see data/README.md)
+data/raw/
+data/processed/
+data/interim/
+*.parquet
+*.csv
+!ml/benchmark/*.csv
+
+# ML artifacts (large or regenerable)
+ml/artifacts/*
+!ml/artifacts/.gitkeep
+!ml/artifacts/evaluation_report.json
+mlruns/
+*.joblib
+*.pkl
+
+# Local databases
+*.db
+*.sqlite3
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
