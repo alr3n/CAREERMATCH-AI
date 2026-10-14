@@ -381,7 +381,7 @@ def parse_projects(lines: list[str], indices: list[int]) -> list[ProjectItem]:
         if not header:
             header, body = [block[0]], block[1:]
         first = strip_bullet(_RANGE.sub("", header[0]))
-        pieces = re.split(r"\s[–—|-]\s|:\s", first, maxsplit=1)
+        pieces = re.split(r"\s[–—|·-]\s|:\s", first, maxsplit=1)
         name = _clean_part(pieces[0])[:200]
         rest = pieces[1] if len(pieces) > 1 else ""
         if not name:
