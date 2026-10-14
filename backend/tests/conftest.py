@@ -30,10 +30,10 @@ from app.core.config import get_settings  # noqa: E402
 
 get_settings.cache_clear()
 
+import app.models  # noqa: E402,F401
 from app.core.rate_limit import rate_limiter  # noqa: E402
 from app.db import session as db_session  # noqa: E402
 from app.db.base import Base  # noqa: E402
-import app.models  # noqa: E402,F401
 from app.main import create_app  # noqa: E402
 
 

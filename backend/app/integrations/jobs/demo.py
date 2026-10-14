@@ -10,7 +10,7 @@ access; it must never be presented as real vacancies.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 from app.integrations.jobs.base import FetchResult, JobProvider, ProviderListing
@@ -155,7 +155,7 @@ class DemoProvider(JobProvider):
         super().__init__("demo", "DEMO DATA (fictional listings)")
 
     def fetch(self) -> FetchResult:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         listings = []
         for job in _DEMO_JOBS:
             html = (

@@ -79,7 +79,7 @@ class Settings(BaseSettings):
         return Path(v).expanduser()
 
     @model_validator(mode="after")
-    def _production_guards(self) -> "Settings":
+    def _production_guards(self) -> Settings:
         if self.app_env == "production":
             if self.secret_key == INSECURE_DEFAULT_SECRET or len(self.secret_key) < 32:
                 raise ValueError("SECRET_KEY must be set to a random value of at least 32 characters in production")

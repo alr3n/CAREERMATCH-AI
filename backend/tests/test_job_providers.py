@@ -3,8 +3,7 @@
 No network access is needed: httpx.MockTransport stands in for the provider.
 """
 
-import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
@@ -208,7 +207,7 @@ def test_missing_listing_is_expired_on_next_refresh(db, live_settings):
 
 
 def test_past_deadline_is_expired(db, live_settings):
-    past = (datetime.now(timezone.utc) - timedelta(days=2)).isoformat()
+    past = (datetime.now(UTC) - timedelta(days=2)).isoformat()
     job_service.refresh_jobs(db, live_settings, transport=_routes([gh_job(9, application_deadline=past)], []))
     assert db.scalar(select(JobListing)).status == "expired"
 

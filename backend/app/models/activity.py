@@ -36,7 +36,7 @@ class MatchResult(UUIDPk, Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     job: Mapped[JobListing] = relationship()
-    evidence: Mapped[list["MatchEvidence"]] = relationship(
+    evidence: Mapped[list[MatchEvidence]] = relationship(
         back_populates="match", cascade="all, delete-orphan", passive_deletes=True, order_by="MatchEvidence.position"
     )
 

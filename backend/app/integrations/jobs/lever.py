@@ -13,7 +13,7 @@ Documentation: https://github.com/lever/postings-api
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
 
 from pydantic import BaseModel, ValidationError
@@ -128,5 +128,5 @@ class LeverProvider(HttpJobProvider):
             salary_currency=(salary.currency or None) if salary else None,
             salary_interval=(salary.interval or None) if salary else None,
             salary_text=p.salaryDescriptionPlain or None,
-            posted_at=datetime.fromtimestamp(p.createdAt / 1000, tz=timezone.utc) if p.createdAt else None,
+            posted_at=datetime.fromtimestamp(p.createdAt / 1000, tz=UTC) if p.createdAt else None,
         )

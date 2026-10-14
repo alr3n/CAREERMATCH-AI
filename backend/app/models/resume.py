@@ -42,17 +42,17 @@ class Resume(UUIDPk, Timestamps, Base):
     detected_preferences: Mapped[dict] = mapped_column(JSONType, default=dict, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
-    user: Mapped["User"] = relationship(back_populates="resumes")
-    skills: Mapped[list["ExtractedSkill"]] = relationship(
+    user: Mapped[User] = relationship(back_populates="resumes")
+    skills: Mapped[list[ExtractedSkill]] = relationship(
         back_populates="resume", cascade="all, delete-orphan", passive_deletes=True, order_by="ExtractedSkill.skill"
     )
-    education: Mapped[list["EducationRecord"]] = relationship(
+    education: Mapped[list[EducationRecord]] = relationship(
         back_populates="resume", cascade="all, delete-orphan", passive_deletes=True, order_by="EducationRecord.position"
     )
-    experience: Mapped[list["ExperienceRecord"]] = relationship(
+    experience: Mapped[list[ExperienceRecord]] = relationship(
         back_populates="resume", cascade="all, delete-orphan", passive_deletes=True, order_by="ExperienceRecord.position"
     )
-    projects: Mapped[list["Project"]] = relationship(
+    projects: Mapped[list[Project]] = relationship(
         back_populates="resume", cascade="all, delete-orphan", passive_deletes=True, order_by="Project.position"
     )
 

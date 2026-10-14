@@ -23,10 +23,10 @@ class User(UUIDPk, Timestamps, Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
-    profile: Mapped["UserProfile"] = relationship(
+    profile: Mapped[UserProfile] = relationship(
         back_populates="user", cascade="all, delete-orphan", uselist=False, passive_deletes=True
     )
-    resumes: Mapped[list["Resume"]] = relationship(
+    resumes: Mapped[list[Resume]] = relationship(
         back_populates="user", cascade="all, delete-orphan", passive_deletes=True
     )
 

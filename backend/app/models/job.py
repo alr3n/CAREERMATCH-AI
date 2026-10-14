@@ -40,7 +40,7 @@ class JobSource(UUIDPk, Timestamps, Base):
     last_error: Mapped[str | None] = mapped_column(String(500))
     last_fetch_count: Mapped[int | None] = mapped_column(Integer)
 
-    listings: Mapped[list["JobListing"]] = relationship(
+    listings: Mapped[list[JobListing]] = relationship(
         back_populates="source", cascade="all, delete-orphan", passive_deletes=True
     )
 
@@ -92,7 +92,7 @@ class JobListing(UUIDPk, Timestamps, Base):
     is_demo: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     source: Mapped[JobSource] = relationship(back_populates="listings")
-    skills: Mapped[list["JobSkill"]] = relationship(
+    skills: Mapped[list[JobSkill]] = relationship(
         back_populates="job", cascade="all, delete-orphan", passive_deletes=True
     )
 
