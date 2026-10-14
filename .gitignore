@@ -52,3 +52,7 @@ mlruns/
 Thumbs.db
 .idea/
 .vscode/
+
+# End-to-end test runtime files
+backend/e2e-storage/
+frontend/e2e/.auth/

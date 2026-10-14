@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: "tnum" 0;
+  }
+  h1, h2, h3 {
+    @apply text-ink;
+    letter-spacing: -0.01em;
+  }
+  :focus-visible {
+    outline: 2px solid #0f6e66;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  a {
+    @apply text-teal underline-offset-2;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-teal text-white hover:bg-teal-dark;
+  }
+  .btn-secondary {
+    @apply btn border border-line bg-surface text-ink hover:border-teal hover:text-teal;
+  }
+  .btn-ghost {
+    @apply btn text-muted hover:bg-teal-tint hover:text-teal;
+  }
+  .btn-danger {
+    @apply btn bg-danger text-white hover:opacity-90;
+  }
+  .field-label {
+    @apply mb-1 block text-sm font-semibold text-ink;
+  }
+  .field-input {
+    @apply w-full rounded border border-line bg-surface px-3 py-2 text-base text-ink placeholder:text-muted/70 focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/20;
+  }
+  .panel {
+    @apply rounded-lg border border-line bg-surface;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Weight that could not be evaluated in a score ledger */
+  .ledger-gap {
+    background-image: repeating-linear-gradient(135deg, #dce1de 0 2px, transparent 2px 6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
