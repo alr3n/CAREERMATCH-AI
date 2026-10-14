@@ -4,10 +4,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.api.routes import auth, jobs, profile, resumes
+from app.api.routes import auth, jobs, matches, profile, resumes
 
 api_router = APIRouter()
-api_router.include_router(auth.router)
-api_router.include_router(profile.router)
-api_router.include_router(resumes.router)
-api_router.include_router(jobs.router)
+for module in (auth, profile, resumes, jobs, matches):
+    api_router.include_router(module.router)
