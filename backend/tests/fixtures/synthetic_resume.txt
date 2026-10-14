@@ -1,0 +1,30 @@
+Juan Dela Test
+juan.test@example.com | +63 912 345 6789 | Quezon City
+
+OBJECTIVE
+Aspiring data analyst seeking a Data Analyst internship in Metro Manila or remote, where I can apply Python and SQL.
+
+TECHNICAL SKILLS
+Python, SQL, Pandas, Microsoft Excel, Git, Tableau
+Languages: R, Go, C
+
+EDUCATION
+Bachelor of Science in Computer Science
+Polytechnic University of the Philippines | 2022 - 2026 (expected)
+
+EXPERIENCE
+Data Analyst Intern | Acme Analytics Inc. | Jun 2024 - Aug 2024
+• Cleaned and analysed sales data using Pandas and SQL.
+• Built weekly dashboards in Tableau for the operations team.
+Student Assistant, PUP Library
+Jan 2023 - May 2023
+• Encoded book records and assisted students.
+
+PROJECTS
+Flood Risk Dashboard – Streamlit app visualising rainfall data with Python and scikit-learn.
+• Trained a simple regression model and deployed it on Docker.
+
+CERTIFICATIONS
+• Google Data Analytics Certificate (Coursera)
+AWARDS
+• Dean's Lister, 2023

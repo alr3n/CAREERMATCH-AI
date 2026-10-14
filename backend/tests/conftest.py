@@ -72,3 +72,16 @@ def register(client: TestClient, email: str = "student@example.com", password: s
 @pytest.fixture()
 def auth_headers(client) -> dict:
     return register(client)
+
+
+@pytest.fixture()
+def uploaded_resume(client, auth_headers) -> dict:
+    from tests.factories import make_pdf, resume_text
+
+    response = client.post(
+        "/api/v1/resumes/upload",
+        headers=auth_headers,
+        files={"file": ("resume.pdf", make_pdf(resume_text()), "application/pdf")},
+    )
+    assert response.status_code == 201, response.text
+    return response.json()
