@@ -61,3 +61,14 @@ def client(db_engine) -> Iterator[TestClient]:
     with TestClient(create_app()) as c:
         yield c
     rate_limiter.reset()
+
+
+def register(client: TestClient, email: str = "student@example.com", password: str = "s3cure-pass!") -> dict:
+    response = client.post("/api/v1/auth/register", json={"email": email, "password": password})
+    assert response.status_code == 201, response.text
+    return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+
+@pytest.fixture()
+def auth_headers(client) -> dict:
+    return register(client)
