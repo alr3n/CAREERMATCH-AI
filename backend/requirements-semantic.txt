@@ -1,0 +1,3 @@
+# Optional: enables the Sentence Transformers semantic backend.
+# Without these packages the app falls back to the local TF-IDF/LSA backend.
+sentence-transformers==3.3.1
