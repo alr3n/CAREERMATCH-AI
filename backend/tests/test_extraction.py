@@ -73,3 +73,11 @@ def test_ph_degree_abbreviation():
     text = "EDUCATION\nBSIT, Test State University\n2021 - 2025\n\nSKILLS\nJava, MySQL, Linux"
     profile = extract_profile(text, date(2026, 1, 1))
     assert profile.education[0].field_of_study == "Information Technology"
+
+
+def test_log_redaction():
+    from app.core.logging import redact
+
+    text = redact("user juan@example.com called +63 912 345 6789 from 127.0.0.1:41832")
+    assert "juan@example.com" not in text and "912 345" not in text
+    assert "127.0.0.1:41832" in text

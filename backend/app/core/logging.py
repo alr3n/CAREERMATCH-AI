@@ -11,7 +11,8 @@ import logging
 import re
 
 _EMAIL = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
-_PHONE = re.compile(r"(?<!\d)(?:\+?\d[\d\s().-]{7,}\d)(?!\d)")
+# Phone-like: 10+ digits separated by spaces, dashes or brackets (not dots, so IPs are left alone).
+_PHONE = re.compile(r"(?<![\d.])\+?\d(?:[\s()-]*\d){9,}(?![\d.])")
 _BEARER = re.compile(r"(?i)bearer\s+[A-Za-z0-9._-]+")
 _JWT = re.compile(r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}")
 
