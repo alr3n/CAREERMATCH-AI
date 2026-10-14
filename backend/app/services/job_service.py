@@ -10,6 +10,7 @@ from datetime import UTC, datetime, timedelta
 
 import httpx
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import Settings, get_settings
@@ -44,6 +45,7 @@ from app.schemas.job import (
 
 logger = logging.getLogger(__name__)
 _refresh_lock = threading.Lock()
+_sources_lock = threading.Lock()
 
 UNSUPPORTED_NOTE = (
     "LinkedIn, JobStreet, Indeed and similar sites are not integrated: they do not offer an authorised public "
@@ -63,6 +65,17 @@ def _aware(dt: datetime | None) -> datetime | None:
 
 
 def sync_sources(db: Session, providers: list[JobProvider]) -> dict[tuple[str, str], JobSource]:
+    """Create/enable rows for configured providers and disable the rest.
+
+    Safe under concurrent requests: a process-local lock serialises callers in
+    one API process, and a savepoint absorbs the unique-constraint race when
+    several processes create the same source at once.
+    """
+    with _sources_lock:
+        return _sync_sources(db, providers)
+
+
+def _sync_sources(db: Session, providers: list[JobProvider]) -> dict[tuple[str, str], JobSource]:
     existing = {(s.provider, s.identifier): s for s in db.scalars(select(JobSource))}
     configured: dict[tuple[str, str], JobSource] = {}
     for provider in providers:
@@ -75,7 +88,14 @@ def sync_sources(db: Session, providers: list[JobProvider]) -> dict[tuple[str, s
                 display_name=provider.display_name,
                 is_demo=provider.is_demo,
             )
-            db.add(source)
+            try:
+                with db.begin_nested():
+                    db.add(source)
+                    db.flush()
+            except IntegrityError:
+                source = db.scalar(
+                    select(JobSource).where(JobSource.provider == provider.provider, JobSource.identifier == provider.identifier)
+                )
         source.enabled = True
         source.display_name = provider.display_name
         configured[key] = source

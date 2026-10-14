@@ -237,3 +237,21 @@ def test_unconfigured_providers_reported_honestly(client, auth_headers, monkeypa
     assert "LinkedIn" in body["unsupported_note"]
     listing = client.get("/api/v1/jobs", headers=auth_headers).json()
     assert listing["total"] == 0 and listing["items"] == []
+
+
+def test_concurrent_source_sync_is_safe(db_engine):
+    """Several requests syncing sources at once must not fail on the unique constraint."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from app.db.session import SessionLocal
+    from app.integrations.jobs.registry import build_providers
+
+    def worker(_):
+        with SessionLocal() as session:
+            job_service.sync_sources(session, build_providers(get_settings()))
+            session.commit()
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        list(pool.map(worker, range(8)))
+    with SessionLocal() as session:
+        assert len(session.scalars(select(JobSource)).all()) == 1
