@@ -175,7 +175,7 @@ npx playwright test
 | Vitest + Testing Library | 22 passed |
 | Playwright E2E (upload → review skills → search → match → open → save → delete resume and account) | 1 passed |
 
-Docker images and the GitHub Actions workflow were written but not executed in the development environment, which has no Docker daemon. The Compose file was validated with `docker compose config`.
+The GitHub Actions workflow (backend on PostgreSQL and SQLite, frontend, and E2E) also passed on its first run for commit `1c120eb`. The Docker images have not been built yet because the development environment has no Docker daemon. The Compose file was validated with `docker compose config`.
 
 Test coverage includes valid, empty, oversized, malformed, encrypted and mislabelled uploads; unsafe file names; extraction corrections; exact, related and missing skills; empty jobs and profiles; conflicting preferences; score normalisation; deterministic ranking; provider success, empty, rate-limited, error, invalid-schema, duplicate, expired and unconfigured cases (including a payload captured from the live Greenhouse API); unauthorised and cross-user access; invalid tokens; rate limits; and deletion.
 
