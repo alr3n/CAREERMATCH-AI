@@ -14,7 +14,8 @@ from pathlib import Path
 
 _TMP = Path(tempfile.mkdtemp(prefix="careermatch-tests-"))
 os.environ.setdefault("APP_ENV", "test")
-os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", f"sqlite:///{_TMP / 'test.db'}")
+# An unset OR empty TEST_DATABASE_URL means "use a throwaway SQLite database".
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL") or f"sqlite:///{_TMP / 'test.db'}"
 os.environ["STORAGE_DIR"] = str(_TMP / "storage")
 os.environ["SECRET_KEY"] = "test-secret-key-that-is-long-enough-for-hs256-signing"
 os.environ["ENABLE_DEMO_PROVIDER"] = "true"
