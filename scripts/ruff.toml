@@ -1,0 +1,12 @@
+extend = "../backend/pyproject.toml"
+
+[lint]
+# Long provenance strings and download commands.
+extend-ignore = ["E501"]
+
+[lint.isort]
+# `_common` puts backend/ on sys.path, so the local helper modules must be
+# imported BEFORE the backend `app` package.
+known-first-party = ["app"]
+known-local-folder = ["_common", "dataset_specs", "validate_datasets"]
+section-order = ["future", "standard-library", "third-party", "local-folder", "first-party"]

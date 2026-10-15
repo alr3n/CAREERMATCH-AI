@@ -1,0 +1,5 @@
+# Extra dependencies for the offline dataset scripts (scripts/*.py).
+# Hugging Face datasets are distributed as Parquet, which pandas reads via pyarrow.
+#   pip install -r backend/requirements-ml.txt
+-r requirements.txt
+pyarrow==18.1.0
