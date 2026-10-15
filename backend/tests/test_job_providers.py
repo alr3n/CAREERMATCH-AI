@@ -94,6 +94,31 @@ def test_greenhouse_parses_documented_shape():
     assert normalised["salary_min"] is None  # never invented
 
 
+# Two job objects copied verbatim from the live public endpoint
+# GET https://boards-api.greenhouse.io/v1/boards/gitlab/jobs on 2026-10-15 (no content=true),
+# so the parser is checked against a real response, not only a hand-written fixture.
+GH_LIVE_GITLAB_JOBS = [
+    {"absolute_url": "https://job-boards.greenhouse.io/gitlab/jobs/8860302002", "data_compliance": [{"type": "gdpr", "requires_consent": False, "requires_processing_consent": False, "requires_retention_consent": False, "retention_period": None, "demographic_data_consent_applies": False}], "internal_job_id": 6547054002, "location": {"name": "Remote, France"}, "metadata": [{"id": 4595831002, "name": "Quota Coverage Type", "value": "Account Executive", "value_type": "single_select"}], "id": 8860302002, "updated_at": "2026-10-02T11:31:50-04:00", "requisition_id": "7109", "title": "Account Executive - France", "company_name": "GitLab", "first_published": "2026-10-02T11:31:50-04:00", "language": "en", "application_deadline": None},
+    {"absolute_url": "https://job-boards.greenhouse.io/gitlab/jobs/8638232002", "data_compliance": [{"type": "gdpr", "requires_consent": False, "requires_processing_consent": False, "requires_retention_consent": False, "retention_period": None, "demographic_data_consent_applies": False}], "internal_job_id": 6449994002, "location": {"name": "Remote, United States"}, "metadata": [{"id": 4595831002, "name": "Quota Coverage Type", "value": "n/a", "value_type": "single_select"}], "id": 8638232002, "updated_at": "2026-09-29T10:38:50-04:00", "requisition_id": "6682", "title": "AI Transformation Owner, CRO", "company_name": "GitLab", "first_published": "2026-07-22T13:38:40-04:00", "language": "en", "application_deadline": None},
+]
+
+
+def test_greenhouse_parses_live_captured_payload():
+    t = transport({"https://boards-api.greenhouse.io/v1/boards/gitlab/jobs": httpx.Response(200, json={"jobs": GH_LIVE_GITLAB_JOBS})})
+    result = GreenhouseProvider("gitlab", "gitlab", transport=t).fetch()
+    assert result.skipped_invalid == 0 and len(result.listings) == 2
+    first, second = result.listings
+    assert first.company == "GitLab"  # company_name from the payload wins over the configured slug
+    assert first.external_id == "8860302002" and first.apply_url.startswith("https://job-boards.greenhouse.io/")
+    assert first.posted_at == datetime(2026, 10, 2, 15, 31, 50, tzinfo=UTC)  # first_published, not updated_at
+    assert second.posted_at == datetime(2026, 7, 22, 17, 38, 40, tzinfo=UTC)
+    assert first.deadline is None
+    normalised = job_service.normalise(first)
+    assert normalised["work_arrangement"] == "remote"  # inferred from "Remote, France"
+    assert normalised["experience_level"] == "unknown"  # no level in the title and no description: not guessed
+    assert normalised["salary_min"] is None and normalised["salary_max"] is None  # never invented
+
+
 def test_lever_parses_lists_salary_and_paginates():
     calls = []
 
