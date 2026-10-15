@@ -1,0 +1,462 @@
+{
+  "report_version": 1,
+  "evaluated_at": "2026-10-15T11:34:11+00:00",
+  "model_version": "transparent-v1",
+  "semantic_backend": "lsa-tfidf-svd (local)",
+  "seed": 42,
+  "dataset": {
+    "name": "CareerMatch synthetic benchmark",
+    "version": "v1",
+    "description": "Synthetic early-career candidate resumes (Philippine context) and synthetic job postings written for this project, with graded relevance labels (0 not relevant, 1 partially relevant, 2 highly relevant) and gold skill annotations. No real personal data.",
+    "candidates": 12,
+    "jobs": 30,
+    "pairs": 360,
+    "label_counts": {
+      "0": 318,
+      "1": 25,
+      "2": 17
+    },
+    "labels": "Assigned by the project author following the rubric in ml/benchmark/README.md; not independently reviewed.",
+    "split": "test (100%)",
+    "split_note": "No model is trained, so there is no training or validation split. The scorer's weights were fixed before evaluation and not tuned on these labels."
+  },
+  "metric_definitions": {
+    "precision@5": "share of the top 5 with label 2",
+    "precision@5_label>=1": "share of the top 5 with label ≥ 1",
+    "recall@10": "share of label-2 jobs found in the top 10",
+    "ndcg@10": "graded nDCG (gain 2^label − 1)",
+    "mrr": "reciprocal rank of the first label-2 job"
+  },
+  "runs": [
+    {
+      "model": "keyword-overlap",
+      "kind": "baseline",
+      "split": "test",
+      "metrics": {
+        "precision@5": 0.2667,
+        "precision@5_label>=1": 0.55,
+        "recall@10": 1.0,
+        "ndcg@10": 0.9218,
+        "mrr": 0.8833
+      },
+      "ndcg@10_95ci": [
+        0.8538,
+        0.9741
+      ],
+      "by_career_stage": {
+        "career_transition": {
+          "candidates": 2,
+          "ndcg@10": 0.7229
+        },
+        "entry_level": {
+          "candidates": 1,
+          "ndcg@10": 1.0
+        },
+        "experienced": {
+          "candidates": 1,
+          "ndcg@10": 0.862
+        },
+        "fresh_graduate": {
+          "candidates": 4,
+          "ndcg@10": 0.9607
+        },
+        "student": {
+          "candidates": 4,
+          "ndcg@10": 0.9778
+        }
+      },
+      "notes": "Share of the job's detected skills found in the profile (exact matches only)."
+    },
+    {
+      "model": "tfidf-cosine",
+      "kind": "baseline",
+      "split": "test",
+      "metrics": {
+        "precision@5": 0.2833,
+        "precision@5_label>=1": 0.5667,
+        "recall@10": 1.0,
+        "ndcg@10": 0.926,
+        "mrr": 0.9444
+      },
+      "ndcg@10_95ci": [
+        0.8874,
+        0.9596
+      ],
+      "by_career_stage": {
+        "career_transition": {
+          "candidates": 2,
+          "ndcg@10": 0.8164
+        },
+        "entry_level": {
+          "candidates": 1,
+          "ndcg@10": 1.0
+        },
+        "experienced": {
+          "candidates": 1,
+          "ndcg@10": 0.9308
+        },
+        "fresh_graduate": {
+          "candidates": 4,
+          "ndcg@10": 0.9546
+        },
+        "student": {
+          "candidates": 4,
+          "ndcg@10": 0.9324
+        }
+      },
+      "notes": "TF-IDF cosine similarity between profile text and job text."
+    },
+    {
+      "model": "semantic-only",
+      "kind": "baseline",
+      "split": "test",
+      "metrics": {
+        "precision@5": 0.2833,
+        "precision@5_label>=1": 0.5167,
+        "recall@10": 1.0,
+        "ndcg@10": 0.9081,
+        "mrr": 0.9333
+      },
+      "ndcg@10_95ci": [
+        0.8607,
+        0.9476
+      ],
+      "by_career_stage": {
+        "career_transition": {
+          "candidates": 2,
+          "ndcg@10": 0.7984
+        },
+        "entry_level": {
+          "candidates": 1,
+          "ndcg@10": 1.0
+        },
+        "experienced": {
+          "candidates": 1,
+          "ndcg@10": 0.9382
+        },
+        "fresh_graduate": {
+          "candidates": 4,
+          "ndcg@10": 0.9087
+        },
+        "student": {
+          "candidates": 4,
+          "ndcg@10": 0.9317
+        }
+      },
+      "notes": "Cosine similarity from the semantic backend alone (lsa-tfidf-svd (local))."
+    },
+    {
+      "model": "transparent-v1",
+      "kind": "candidate",
+      "split": "test",
+      "metrics": {
+        "precision@5": 0.2833,
+        "precision@5_label>=1": 0.6,
+        "recall@10": 1.0,
+        "ndcg@10": 0.952,
+        "mrr": 0.9333
+      },
+      "ndcg@10_95ci": [
+        0.9006,
+        0.9842
+      ],
+      "by_career_stage": {
+        "career_transition": {
+          "candidates": 2,
+          "ndcg@10": 0.8484
+        },
+        "entry_level": {
+          "candidates": 1,
+          "ndcg@10": 1.0
+        },
+        "experienced": {
+          "candidates": 1,
+          "ndcg@10": 0.9564
+        },
+        "fresh_graduate": {
+          "candidates": 4,
+          "ndcg@10": 0.9861
+        },
+        "student": {
+          "candidates": 4,
+          "ndcg@10": 0.9566
+        }
+      },
+      "notes": "Transparent multi-signal score with default weights, extracted skills and stated preferences."
+    },
+    {
+      "model": "transparent-v1 (no preferences)",
+      "kind": "ablation",
+      "split": "test",
+      "metrics": {
+        "precision@5": 0.2667,
+        "precision@5_label>=1": 0.55,
+        "recall@10": 1.0,
+        "ndcg@10": 0.9327,
+        "mrr": 0.9306
+      },
+      "ndcg@10_95ci": [
+        0.8746,
+        0.9728
+      ],
+      "by_career_stage": {
+        "career_transition": {
+          "candidates": 2,
+          "ndcg@10": 0.7883
+        },
+        "entry_level": {
+          "candidates": 1,
+          "ndcg@10": 1.0
+        },
+        "experienced": {
+          "candidates": 1,
+          "ndcg@10": 0.935
+        },
+        "fresh_graduate": {
+          "candidates": 4,
+          "ndcg@10": 0.9771
+        },
+        "student": {
+          "candidates": 4,
+          "ndcg@10": 0.9432
+        }
+      },
+      "notes": "Same scorer without the candidate's stated preferences."
+    },
+    {
+      "model": "transparent-v1 (gold skills)",
+      "kind": "ablation",
+      "split": "test",
+      "metrics": {
+        "precision@5": 0.2833,
+        "precision@5_label>=1": 0.5833,
+        "recall@10": 1.0,
+        "ndcg@10": 0.9476,
+        "mrr": 0.9333
+      },
+      "ndcg@10_95ci": [
+        0.8991,
+        0.9777
+      ],
+      "by_career_stage": {
+        "career_transition": {
+          "candidates": 2,
+          "ndcg@10": 0.8484
+        },
+        "entry_level": {
+          "candidates": 1,
+          "ndcg@10": 1.0
+        },
+        "experienced": {
+          "candidates": 1,
+          "ndcg@10": 0.9564
+        },
+        "fresh_graduate": {
+          "candidates": 4,
+          "ndcg@10": 0.982
+        },
+        "student": {
+          "candidates": 4,
+          "ndcg@10": 0.9475
+        }
+      },
+      "notes": "Same scorer using hand-annotated skills instead of extracted ones (oracle extraction)."
+    }
+  ],
+  "max_achievable": {
+    "precision@5": 0.2833,
+    "note": "Few label-2 jobs exist per candidate, so Precision@5 cannot reach 1.0."
+  },
+  "comparison": {
+    "candidate": "transparent-v1",
+    "baseline": "tfidf-cosine",
+    "metric": "ndcg@10",
+    "mean_difference": 0.026,
+    "95ci": [
+      -0.0014,
+      0.0514
+    ]
+  },
+  "extraction": {
+    "resume_skills": {
+      "precision": 0.9231,
+      "recall": 0.973,
+      "f1": 0.9474,
+      "tp": 72,
+      "fp": 6,
+      "fn": 2,
+      "examples": 12
+    },
+    "job_skills": {
+      "precision": 0.9789,
+      "recall": 0.9456,
+      "f1": 0.9619,
+      "tp": 139,
+      "fp": 3,
+      "fn": 8,
+      "examples": 30
+    },
+    "education_field_accuracy": {
+      "precision": null,
+      "recall": 1.0,
+      "f1": null,
+      "examples": 12,
+      "note": "share of resumes whose gold field of study was extracted"
+    },
+    "experience_title_recall": {
+      "precision": null,
+      "recall": 1.0,
+      "f1": null,
+      "examples": 10
+    },
+    "job_requirement_level_accuracy": {
+      "precision": null,
+      "recall": 0.964,
+      "f1": null,
+      "examples": 139,
+      "note": "required/preferred/mentioned tag correct, among correctly detected skills"
+    },
+    "skill_errors": {
+      "C01": {
+        "false_positives": [
+          "Sales"
+        ],
+        "false_negatives": []
+      },
+      "C02": {
+        "false_positives": [],
+        "false_negatives": [
+          "Vercel"
+        ]
+      },
+      "C04": {
+        "false_positives": [
+          "Auditing"
+        ],
+        "false_negatives": []
+      },
+      "C06": {
+        "false_positives": [
+          "Social Media Marketing"
+        ],
+        "false_negatives": [
+          "UI/UX Design"
+        ]
+      },
+      "C08": {
+        "false_positives": [
+          "Communication",
+          "Digital Marketing"
+        ],
+        "false_negatives": []
+      },
+      "C11": {
+        "false_positives": [
+          "Call Center Operations"
+        ],
+        "false_negatives": []
+      },
+      "J01": {
+        "false_positives": [],
+        "false_negatives": [
+          "R"
+        ]
+      },
+      "J02": {
+        "false_positives": [
+          "Data Visualization"
+        ],
+        "false_negatives": []
+      },
+      "J04": {
+        "false_positives": [],
+        "false_negatives": [
+          "dbt"
+        ]
+      },
+      "J10": {
+        "false_positives": [],
+        "false_negatives": [
+          "Go"
+        ]
+      },
+      "J14": {
+        "false_positives": [],
+        "false_negatives": [
+          "Dart"
+        ]
+      },
+      "J15": {
+        "false_positives": [],
+        "false_negatives": [
+          "Accounting"
+        ]
+      },
+      "J17": {
+        "false_positives": [
+          "Leadership"
+        ],
+        "false_negatives": []
+      },
+      "J21": {
+        "false_positives": [
+          "Social Media Marketing"
+        ],
+        "false_negatives": [
+          "Graphic Design"
+        ]
+      },
+      "J25": {
+        "false_positives": [],
+        "false_negatives": [
+          "English Proficiency"
+        ]
+      },
+      "J26": {
+        "false_positives": [],
+        "false_negatives": [
+          "Content Writing"
+        ]
+      }
+    }
+  },
+  "data_quality": {
+    "benchmark_jobs": {
+      "listings": 30,
+      "duplicate_rate": 0.0,
+      "https_apply_links": 1.0,
+      "unknown_work_arrangement": 0.0,
+      "unknown_employment_type": 0.0,
+      "unknown_experience_level": 0.2,
+      "missing_location": 0.0
+    },
+    "demo_listings": {
+      "listings": 20,
+      "duplicate_rate": 0.0,
+      "https_apply_links": 1.0,
+      "unknown_work_arrangement": 0.0,
+      "unknown_employment_type": 0.0,
+      "unknown_experience_level": 0.1,
+      "missing_location": 0.0
+    },
+    "not_measured": [
+      "Working source links (needs network access to the providers; checked per refresh in production via HTTP status).",
+      "Share of expired listings still displayed: expired listings are excluded by query; verify on a live database."
+    ]
+  },
+  "performance": {
+    "environment": "Linux x86_64, Python 3.13.16",
+    "resume_extraction_ms_median": 6.5,
+    "matching_ms_median_per_candidate": 8.6,
+    "jobs_per_match": 30,
+    "note": "In-process timings of the ML code only (no HTTP or database), measured during this run."
+  },
+  "limitations": [
+    "Tiny benchmark: 12 synthetic candidates × 30 synthetic postings (360 pairs). Results are indicative only and confidence intervals are wide.",
+    "Labels were assigned by the project author with a written rubric; there was no second annotator, so inter-annotator agreement is unknown, and the author also designed the scorer (risk of shared assumptions).",
+    "Candidates and postings were written to cover distinct fields, which makes field discrimination easier than in real data. Real postings are noisier and longer.",
+    "The skill taxonomy was written by the same author; extraction recall on skills outside the taxonomy is zero by construction (a few such skills are included in the gold annotations to keep this visible).",
+    "Default scoring weights come from the project brief and were not tuned; no supervised ranker was trained because no genuine labelled training data exists.",
+    "This evaluates ranking agreement with relevance labels, not employment outcomes. No claim is made that CareerMatch AI improves hiring results."
+  ]
+}

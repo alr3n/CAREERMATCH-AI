@@ -20,7 +20,9 @@ interface Report {
   seed?: number;
   dataset?: { name: string; version: string; description?: string; split?: string; split_note?: string; candidates?: number; jobs?: number; pairs?: number; labels?: string };
   runs?: Run[];
-  extraction?: Record<string, Record<string, number | string | null>>;
+  extraction?: Record<string, Record<string, unknown>>;
+  comparison?: { candidate: string; baseline: string; metric: string; mean_difference?: number; "95ci"?: [number, number] };
+  max_achievable?: { "precision@5": number; note: string };
   limitations?: string[];
 }
 
@@ -132,6 +134,24 @@ export function EvaluationPage() {
                 ))}
               </tbody>
             </table>
+            {report.max_achievable && (
+              <p className="mt-3 text-sm text-muted">
+                Highest possible Precision@5 on this benchmark: {fmt(report.max_achievable["precision@5"])}. {report.max_achievable.note}
+              </p>
+            )}
+            {report.comparison?.["95ci"] && (
+              <p className="mt-2 text-sm">
+                {report.comparison.candidate} vs. {report.comparison.baseline} ({report.comparison.metric}): mean difference{" "}
+                <span className="num font-semibold">{fmt(report.comparison.mean_difference)}</span>, 95% CI{" "}
+                <span className="num">
+                  [{fmt(report.comparison["95ci"][0])}, {fmt(report.comparison["95ci"][1])}]
+                </span>
+                .{" "}
+                {report.comparison["95ci"][0] <= 0
+                  ? "The interval includes zero, so this benchmark does not show a reliable improvement."
+                  : "The interval excludes zero on this benchmark."}
+              </p>
+            )}
             {runs.some((r) => r.notes) && (
               <ul className="mt-4 space-y-1 text-sm text-muted">
                 {runs.filter((r) => r.notes).map((r) => (
@@ -160,7 +180,9 @@ export function EvaluationPage() {
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(report.extraction).map(([task, m]) => (
+                {Object.entries(report.extraction)
+                  .filter(([, m]) => m && typeof m === "object" && ("recall" in m || "precision" in m))
+                  .map(([task, m]) => (
                   <tr key={task} className="border-b border-line/60">
                     <td className="py-2">{task.replace(/_/g, " ")}</td>
                     <td className="num py-2 text-right">{fmt(m.precision)}</td>
