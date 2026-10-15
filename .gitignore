@@ -21,6 +21,7 @@ frontend/coverage/
 frontend/test-results/
 frontend/playwright-report/
 frontend/blob-report/
+*.tsbuildinfo
 
 # Uploaded resumes and runtime storage (never commit real resumes)
 storage/
