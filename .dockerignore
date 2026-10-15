@@ -1,0 +1,17 @@
+.git
+.env
+.env.*
+!.env.example
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/node_modules
+frontend/dist
+frontend/test-results
+frontend/playwright-report
+**/*.db
+**/storage
+backend/e2e-storage
+data/raw
+data/processed
+mlruns

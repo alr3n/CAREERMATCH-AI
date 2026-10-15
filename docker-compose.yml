@@ -1,0 +1,53 @@
+# Local stack: PostgreSQL + API + web.  Usage:
+#   cp .env.example .env   # then set SECRET_KEY and any providers
+#   docker compose up --build
+# Web: http://localhost:5173   API docs: http://localhost:8000/api/v1/docs
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-careermatch}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-careermatch}
+      POSTGRES_DB: ${POSTGRES_DB:-careermatch}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-careermatch} -d ${POSTGRES_DB:-careermatch}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-careermatch}:${POSTGRES_PASSWORD:-careermatch}@db:5432/${POSTGRES_DB:-careermatch}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - resume-storage:/app/storage
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  resume-storage:
