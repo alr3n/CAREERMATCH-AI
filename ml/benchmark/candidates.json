@@ -1,0 +1,407 @@
+[
+  {
+    "id": "C01",
+    "stage": "student",
+    "preferences": {
+      "career_stage": "student",
+      "preferred_titles": [
+        "Data Analyst"
+      ],
+      "work_arrangements": [
+        "hybrid",
+        "remote"
+      ],
+      "employment_types": [
+        "internship"
+      ],
+      "preferred_locations": [
+        "Metro Manila"
+      ]
+    },
+    "resume": "Candidate C01\nc01.candidate@example.com | +63 917 000 0001\n\nOBJECTIVE\nStatistics student seeking a data analyst internship in Metro Manila.\n\nSKILLS\nPython, SQL, Pandas, Microsoft Excel, Tableau, Statistics\n\nEDUCATION\nBachelor of Science in Statistics\nTest State University | 2023 - 2027 (expected)\n\nPROJECTS\nBarangay Survey Dashboard – Cleaned survey data with Pandas and built a Tableau dashboard.\nSales Forecast Notebook – Forecasted monthly sales in a Jupyter notebook using Python.\n",
+    "gold": {
+      "skills": [
+        "Python",
+        "SQL",
+        "Pandas",
+        "Microsoft Excel",
+        "Tableau",
+        "Statistics",
+        "Jupyter"
+      ],
+      "education_field": "Statistics",
+      "experience_titles": []
+    }
+  },
+  {
+    "id": "C02",
+    "stage": "fresh_graduate",
+    "preferences": {
+      "career_stage": "fresh_graduate",
+      "preferred_titles": [
+        "Frontend Developer"
+      ],
+      "work_arrangements": [
+        "hybrid",
+        "remote"
+      ],
+      "employment_types": [
+        "full_time"
+      ],
+      "preferred_locations": [
+        "Pasig",
+        "Metro Manila"
+      ]
+    },
+    "resume": "Candidate C02\nc02.candidate@example.com\n\nSUMMARY\nComputer Science graduate who enjoys building accessible web interfaces.\n\nTECHNICAL SKILLS\nJavaScript, React, HTML, CSS, Git, Tailwind CSS\n\nEDUCATION\nBS Computer Science, Test Polytechnic College, 2020 - 2024\n\nEXPERIENCE\nWeb Development Intern | Test Studio | Jun 2023 - Aug 2023\n• Built React components for a booking site and fixed CSS layout bugs.\n\nPROJECTS\nRecipe Finder – React app consuming a public REST API, deployed with Vercel.\n",
+    "gold": {
+      "skills": [
+        "JavaScript",
+        "React",
+        "HTML",
+        "CSS",
+        "Git",
+        "Tailwind CSS",
+        "REST APIs",
+        "Vercel"
+      ],
+      "education_field": "Computer Science",
+      "experience_titles": [
+        "Web Development Intern"
+      ]
+    }
+  },
+  {
+    "id": "C03",
+    "stage": "experienced",
+    "preferences": {
+      "career_stage": "experienced",
+      "preferred_titles": [
+        "Backend Engineer"
+      ],
+      "work_arrangements": [
+        "remote"
+      ],
+      "employment_types": [
+        "full_time"
+      ]
+    },
+    "resume": "Candidate C03\n\nPROFESSIONAL SUMMARY\nBackend developer with three years of experience building Python services.\n\nSKILLS\nPython, Django, FastAPI, PostgreSQL, Docker, AWS, REST APIs, Git\n\nWORK EXPERIENCE\nSoftware Engineer | Test Logistics Corp | Jan 2022 - Present\n• Designed REST APIs in Django and FastAPI serving 2 million requests a day.\n• Migrated services to Docker on AWS.\nJunior Developer | Test Agency | Jul 2021 - Dec 2021\n• Maintained PostgreSQL schemas and wrote unit tests with pytest.\n\nEDUCATION\nBS Information Technology, Test University, 2017 - 2021\n",
+    "gold": {
+      "skills": [
+        "Python",
+        "Django",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker",
+        "AWS",
+        "REST APIs",
+        "Git",
+        "Unit Testing"
+      ],
+      "education_field": "Information Technology",
+      "experience_titles": [
+        "Software Engineer",
+        "Junior Developer"
+      ]
+    }
+  },
+  {
+    "id": "C04",
+    "stage": "fresh_graduate",
+    "preferences": {
+      "career_stage": "fresh_graduate",
+      "preferred_titles": [
+        "Accounting Assistant",
+        "Junior Accountant"
+      ],
+      "work_arrangements": [
+        "onsite"
+      ],
+      "employment_types": [
+        "full_time"
+      ],
+      "preferred_locations": [
+        "Makati",
+        "Pasig"
+      ]
+    },
+    "resume": "Candidate C04\n\nOBJECTIVE\nBS Accountancy graduate looking for a full-time accounting role.\n\nSKILLS\nBookkeeping, Microsoft Excel, QuickBooks, Taxation, Attention to detail\n\nEDUCATION\nBachelor of Science in Accountancy\nTest College of Business | 2020 - 2024\n\nINTERNSHIP\nAccounting Intern | Test Audit Firm | Jan 2024 - Apr 2024\n• Prepared bank reconciliations and journal entries.\n",
+    "gold": {
+      "skills": [
+        "Bookkeeping",
+        "Microsoft Excel",
+        "QuickBooks",
+        "Taxation",
+        "Attention to Detail",
+        "Accounting"
+      ],
+      "education_field": "Accountancy",
+      "experience_titles": [
+        "Accounting Intern"
+      ]
+    }
+  },
+  {
+    "id": "C05",
+    "stage": "career_transition",
+    "preferences": {
+      "career_stage": "career_transition",
+      "preferred_titles": [
+        "Customer Service Representative",
+        "Technical Support"
+      ],
+      "work_arrangements": [
+        "onsite",
+        "remote"
+      ],
+      "employment_types": [
+        "full_time"
+      ],
+      "preferred_locations": [
+        "Cebu"
+      ]
+    },
+    "resume": "Candidate C05\n\nSUMMARY\nFormer hotel front desk officer moving into customer support roles.\n\nSKILLS\nCustomer Service, Communication, English communication, Microsoft Office, Problem Solving\n\nEXPERIENCE\nFront Desk Officer | Test Resort Cebu | Mar 2019 - Dec 2023\n• Handled guest concerns in English and resolved complaints.\n• Trained new staff on the booking system.\n\nEDUCATION\nBachelor of Science in Hospitality Management, Test University, 2015 - 2019\n",
+    "gold": {
+      "skills": [
+        "Customer Service",
+        "Communication",
+        "English Proficiency",
+        "Microsoft Office",
+        "Problem Solving"
+      ],
+      "education_field": "Hospitality Management",
+      "experience_titles": [
+        "Front Desk Officer"
+      ]
+    }
+  },
+  {
+    "id": "C06",
+    "stage": "student",
+    "preferences": {
+      "career_stage": "student",
+      "preferred_titles": [
+        "Graphic Designer",
+        "UI/UX Designer"
+      ],
+      "work_arrangements": [
+        "hybrid",
+        "remote"
+      ],
+      "employment_types": [
+        "internship"
+      ]
+    },
+    "resume": "Candidate C06\n\nOBJECTIVE\nMultimedia arts student seeking a graphic design internship.\n\nSKILLS\nAdobe Photoshop, Adobe Illustrator, Canva, Figma, Video Editing\n\nEDUCATION\nBA Multimedia Arts, Test School of Design, 2022 - 2026\n\nPROJECTS\nCampus Fair Branding – Designed posters and social media kits in Illustrator.\nMobile App Mock-up – Wireframes and prototype in Figma for a student planner.\n",
+    "gold": {
+      "skills": [
+        "Adobe Photoshop",
+        "Adobe Illustrator",
+        "Canva",
+        "Figma",
+        "Video Editing",
+        "Graphic Design",
+        "UI/UX Design"
+      ],
+      "education_field": "Multimedia Arts",
+      "experience_titles": []
+    }
+  },
+  {
+    "id": "C07",
+    "stage": "fresh_graduate",
+    "preferences": {
+      "career_stage": "fresh_graduate",
+      "preferred_titles": [
+        "IT Support"
+      ],
+      "work_arrangements": [
+        "onsite"
+      ],
+      "employment_types": [
+        "full_time"
+      ],
+      "preferred_locations": [
+        "Metro Manila"
+      ]
+    },
+    "resume": "Candidate C07\n\nSKILLS\nNetworking, Linux, Windows Server, Technical Support, troubleshooting\n\nEDUCATION\nBSIT, Test Institute of Technology, 2020 - 2024\n\nOJT\nIT Support Intern | Test Hospital | Feb 2024 - May 2024\n• Resolved help desk tickets and configured Active Directory accounts.\n• Crimped and tested LAN cables.\n",
+    "gold": {
+      "skills": [
+        "Networking",
+        "Linux",
+        "Windows Server",
+        "Technical Support"
+      ],
+      "education_field": "Information Technology",
+      "experience_titles": [
+        "IT Support Intern"
+      ]
+    }
+  },
+  {
+    "id": "C08",
+    "stage": "student",
+    "preferences": {
+      "career_stage": "student",
+      "preferred_titles": [
+        "Digital Marketing"
+      ],
+      "work_arrangements": [
+        "remote"
+      ],
+      "employment_types": [
+        "internship"
+      ]
+    },
+    "resume": "Candidate C08\n\nOBJECTIVE\nCommunication student seeking a remote digital marketing internship.\n\nSKILLS\nSocial Media Marketing, Content Writing, SEO, Canva, Google Analytics\n\nEDUCATION\nAB Communication, Test University, 2022 - 2026\n\nEXPERIENCE\nSocial Media Volunteer | Test Youth Organization | Aug 2023 - May 2024\n• Grew the page following by planning weekly content calendars.\n",
+    "gold": {
+      "skills": [
+        "Social Media Marketing",
+        "Content Writing",
+        "SEO",
+        "Canva",
+        "Google Analytics"
+      ],
+      "education_field": "Communication",
+      "experience_titles": [
+        "Social Media Volunteer"
+      ]
+    }
+  },
+  {
+    "id": "C09",
+    "stage": "student",
+    "preferences": {
+      "career_stage": "student",
+      "preferred_titles": [
+        "Machine Learning Engineer",
+        "Data Scientist"
+      ],
+      "work_arrangements": [
+        "onsite",
+        "hybrid",
+        "remote"
+      ],
+      "employment_types": [
+        "internship"
+      ]
+    },
+    "resume": "Candidate C09\n\nSUMMARY\nComputer Science student focused on machine learning.\n\nSKILLS\nPython, scikit-learn, PyTorch, Statistics, NumPy, Jupyter\n\nEDUCATION\nBS Computer Science, Test State University, 2022 - 2026 (expected)\n\nPROJECTS\nRice Leaf Disease Classifier – Trained a PyTorch CNN on public images; reported test accuracy.\nHouse Price Model – scikit-learn regression with cross-validation.\n",
+    "gold": {
+      "skills": [
+        "Python",
+        "scikit-learn",
+        "PyTorch",
+        "Statistics",
+        "NumPy",
+        "Jupyter",
+        "Machine Learning"
+      ],
+      "education_field": "Computer Science",
+      "experience_titles": []
+    }
+  },
+  {
+    "id": "C10",
+    "stage": "career_transition",
+    "preferences": {
+      "career_stage": "career_transition",
+      "preferred_titles": [
+        "Data Analyst",
+        "Business Intelligence Analyst"
+      ],
+      "work_arrangements": [
+        "remote",
+        "hybrid"
+      ],
+      "employment_types": [
+        "full_time"
+      ]
+    },
+    "resume": "Candidate C10\n\nSUMMARY\nHigh-school math teacher transitioning to data analysis.\n\nSKILLS\nMicrosoft Excel, Google Sheets, Statistics, SQL (beginner), Presentation skills\n\nEXPERIENCE\nMathematics Teacher | Test National High School | Jun 2018 - May 2024\n• Analysed student grades in Excel to target remedial classes.\n\nEDUCATION\nBachelor of Secondary Education major in Mathematics, Test Normal University, 2014 - 2018\n\nCERTIFICATIONS\nGoogle Data Analytics Certificate\n",
+    "gold": {
+      "skills": [
+        "Microsoft Excel",
+        "Google Sheets",
+        "Statistics",
+        "SQL",
+        "Presentation Skills",
+        "Data Analysis"
+      ],
+      "education_field": "Mathematics",
+      "experience_titles": [
+        "Mathematics Teacher"
+      ]
+    }
+  },
+  {
+    "id": "C11",
+    "stage": "fresh_graduate",
+    "preferences": {
+      "career_stage": "fresh_graduate",
+      "preferred_titles": [
+        "Recruitment Assistant",
+        "HR Assistant"
+      ],
+      "work_arrangements": [
+        "onsite",
+        "hybrid"
+      ],
+      "employment_types": [
+        "full_time"
+      ],
+      "preferred_locations": [
+        "Makati"
+      ]
+    },
+    "resume": "Candidate C11\n\nOBJECTIVE\nPsychology graduate interested in recruitment and HR.\n\nSKILLS\nRecruitment, Microsoft Office, Communication, Google Workspace\n\nEDUCATION\nBS Psychology, Test University, 2020 - 2024\n\nINTERNSHIP\nHR Intern | Test BPO Company | Jan 2024 - Apr 2024\n• Screened applicants and scheduled interviews.\n",
+    "gold": {
+      "skills": [
+        "Recruitment",
+        "Microsoft Office",
+        "Communication",
+        "Google Workspace"
+      ],
+      "education_field": "Psychology",
+      "experience_titles": [
+        "HR Intern"
+      ]
+    }
+  },
+  {
+    "id": "C12",
+    "stage": "entry_level",
+    "preferences": {
+      "career_stage": "entry_level",
+      "preferred_titles": [
+        "Android Developer",
+        "Mobile Developer"
+      ],
+      "work_arrangements": [
+        "hybrid",
+        "remote"
+      ],
+      "employment_types": [
+        "full_time"
+      ]
+    },
+    "resume": "Candidate C12\n\nSUMMARY\nAndroid developer with one year of experience.\n\nSKILLS\nKotlin, Java, Android, Firebase, Git, REST APIs\n\nEXPERIENCE\nJunior Android Developer | Test Apps Inc. | Sep 2023 - Present\n• Built features in Kotlin and integrated Firebase authentication.\n\nEDUCATION\nBS Computer Engineering, Test University, 2019 - 2023\n",
+    "gold": {
+      "skills": [
+        "Kotlin",
+        "Java",
+        "Android Development",
+        "Firebase",
+        "Git",
+        "REST APIs"
+      ],
+      "education_field": "Computer Engineering",
+      "experience_titles": [
+        "Junior Android Developer"
+      ]
+    }
+  }
+]

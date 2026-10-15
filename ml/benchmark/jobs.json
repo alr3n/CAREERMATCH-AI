@@ -1,0 +1,599 @@
+[
+  {
+    "id": "J01",
+    "title": "Data Analyst Intern",
+    "company": "Lakbay Analytics",
+    "location": "Makati, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Internship",
+    "content": "<p>Join our BI team for a 3-month internship.</p><h3>What you'll do</h3><ul><li>Prepare weekly sales reports</li><li>Clean data from several sources</li></ul><h3>Requirements</h3><ul><li>Basic SQL</li><li>Microsoft Excel (pivot tables)</li><li>Python or R for data analysis</li></ul><h3>Nice to have</h3><ul><li>Tableau or Power BI</li><li>Statistics coursework</li></ul>",
+    "gold": {
+      "required": [
+        "SQL",
+        "Microsoft Excel",
+        "Python",
+        "R",
+        "Data Analysis"
+      ],
+      "preferred": [
+        "Tableau",
+        "Power BI",
+        "Statistics"
+      ]
+    }
+  },
+  {
+    "id": "J02",
+    "title": "Junior Data Analyst",
+    "company": "Halo-Halo Retail Group",
+    "location": "Quezon City, Metro Manila",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "content": "<p>Help our merchandising team make data-driven decisions.</p><h3>What you'll do</h3><ul><li>Maintain dashboards</li><li>Answer ad-hoc questions with SQL</li></ul><h3>Requirements</h3><ul><li>0-1 years of experience; fresh graduates welcome</li><li>Strong SQL</li><li>Power BI or Tableau</li><li>Clear communication</li></ul><h3>Nice to have</h3><ul><li>Python with Pandas</li></ul>",
+    "gold": {
+      "required": [
+        "SQL",
+        "Power BI",
+        "Tableau",
+        "Communication"
+      ],
+      "preferred": [
+        "Python",
+        "Pandas"
+      ]
+    }
+  },
+  {
+    "id": "J03",
+    "title": "Senior Data Scientist",
+    "company": "Tanglaw Fintech",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Full-time",
+    "content": "<p>Lead credit-risk modelling.</p><h3>What you'll do</h3><ul><li>Own model development end to end</li><li>Mentor analysts</li></ul><h3>Requirements</h3><ul><li>6+ years of experience in data science</li><li>Python</li><li>Machine Learning</li><li>Apache Spark</li><li>Statistics</li></ul><h3>Nice to have</h3><ul><li>MLOps experience</li></ul>",
+    "gold": {
+      "required": [
+        "Python",
+        "Machine Learning",
+        "Apache Spark",
+        "Statistics"
+      ],
+      "preferred": [
+        "MLOps"
+      ]
+    }
+  },
+  {
+    "id": "J04",
+    "title": "Business Intelligence Analyst",
+    "company": "Lakbay Analytics",
+    "location": "Makati, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Full-time",
+    "content": "<p>Build reporting for regional operations.</p><h3>What you'll do</h3><ul><li>Design Tableau dashboards</li><li>Define KPIs with stakeholders</li></ul><h3>Requirements</h3><ul><li>2+ years of experience in BI or analytics</li><li>SQL</li><li>Tableau</li><li>Data Visualization</li></ul><h3>Nice to have</h3><ul><li>dbt</li><li>Looker Studio</li></ul>",
+    "gold": {
+      "required": [
+        "SQL",
+        "Tableau",
+        "Data Visualization"
+      ],
+      "preferred": [
+        "dbt",
+        "Looker"
+      ]
+    }
+  },
+  {
+    "id": "J05",
+    "title": "Machine Learning Engineer Intern",
+    "company": "Bituin AI Lab",
+    "location": "Cebu City, Cebu",
+    "workplace": "onsite",
+    "commitment": "Internship",
+    "content": "<p>Work on computer vision for agriculture.</p><h3>What you'll do</h3><ul><li>Train and evaluate models</li><li>Label and prepare data</li></ul><h3>Requirements</h3><ul><li>Python</li><li>Machine Learning fundamentals</li><li>PyTorch or TensorFlow</li></ul><h3>Nice to have</h3><ul><li>Computer Vision</li><li>Jupyter</li></ul>",
+    "gold": {
+      "required": [
+        "Python",
+        "Machine Learning",
+        "PyTorch",
+        "TensorFlow"
+      ],
+      "preferred": [
+        "Computer Vision",
+        "Jupyter"
+      ]
+    }
+  },
+  {
+    "id": "J06",
+    "title": "Junior Frontend Developer",
+    "company": "Sari Commerce",
+    "location": "Pasig, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Full-time",
+    "content": "<p>Build our seller dashboard.</p><h3>What you'll do</h3><ul><li>Build React components</li><li>Integrate REST APIs</li></ul><h3>Requirements</h3><ul><li>JavaScript, HTML and CSS</li><li>React</li><li>Git</li><li>0-2 years of experience</li></ul><h3>Nice to have</h3><ul><li>TypeScript</li><li>Tailwind CSS</li></ul>",
+    "gold": {
+      "required": [
+        "JavaScript",
+        "HTML",
+        "CSS",
+        "React",
+        "Git"
+      ],
+      "preferred": [
+        "TypeScript",
+        "Tailwind CSS",
+        "REST APIs"
+      ]
+    }
+  },
+  {
+    "id": "J07",
+    "title": "Frontend Engineer",
+    "company": "Tanglaw Fintech",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Full-time",
+    "content": "<p>Own the customer web app.</p><h3>What you'll do</h3><ul><li>Lead UI architecture decisions</li><li>Improve web performance</li></ul><h3>Requirements</h3><ul><li>4+ years of experience building web apps</li><li>React and TypeScript</li><li>Unit Testing</li></ul><h3>Nice to have</h3><ul><li>Next.js</li><li>Web Accessibility</li></ul>",
+    "gold": {
+      "required": [
+        "React",
+        "TypeScript",
+        "Unit Testing"
+      ],
+      "preferred": [
+        "Next.js",
+        "Web Accessibility"
+      ]
+    }
+  },
+  {
+    "id": "J08",
+    "title": "Web Developer Intern",
+    "company": "Ugnayan Media",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Internship",
+    "content": "<p>Maintain our publication websites.</p><h3>What you'll do</h3><ul><li>Update WordPress themes</li><li>Fix layout bugs</li></ul><h3>Requirements</h3><ul><li>HTML and CSS</li><li>Basic JavaScript</li></ul><h3>Nice to have</h3><ul><li>WordPress</li><li>PHP</li></ul>",
+    "gold": {
+      "required": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "preferred": [
+        "WordPress",
+        "PHP"
+      ]
+    }
+  },
+  {
+    "id": "J09",
+    "title": "Backend Engineer (Python)",
+    "company": "Daloy Logistics",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Full-time",
+    "content": "<p>Build services for delivery routing.</p><h3>What you'll do</h3><ul><li>Design REST APIs</li><li>Operate services on AWS</li></ul><h3>Requirements</h3><ul><li>3+ years of professional experience</li><li>Python with Django or FastAPI</li><li>PostgreSQL</li><li>Docker</li></ul><h3>Nice to have</h3><ul><li>AWS</li><li>CI/CD</li></ul>",
+    "gold": {
+      "required": [
+        "Python",
+        "Django",
+        "FastAPI",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "preferred": [
+        "AWS",
+        "CI/CD",
+        "REST APIs"
+      ]
+    }
+  },
+  {
+    "id": "J10",
+    "title": "Senior Backend Engineer (Go)",
+    "company": "Daloy Logistics",
+    "location": "Taguig, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Full-time",
+    "content": "<p>Lead our platform team.</p><h3>What you'll do</h3><ul><li>Set technical direction</li><li>Mentor engineers</li></ul><h3>Requirements</h3><ul><li>7+ years of experience</li><li>Go</li><li>Kubernetes</li><li>Microservices</li><li>System Design</li></ul><h3>Nice to have</h3><ul><li>Kafka</li></ul>",
+    "gold": {
+      "required": [
+        "Go",
+        "Kubernetes",
+        "Microservices",
+        "System Design"
+      ],
+      "preferred": [
+        "Kafka"
+      ]
+    }
+  },
+  {
+    "id": "J11",
+    "title": "Full-stack Developer",
+    "company": "Sari Commerce",
+    "location": "Pasig, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Full-time",
+    "content": "<p>Ship features across our stack.</p><h3>What you'll do</h3><ul><li>Build APIs and UIs</li><li>Write tests</li></ul><h3>Requirements</h3><ul><li>2+ years of experience</li><li>Node.js and Express.js</li><li>React</li><li>MongoDB</li></ul><h3>Nice to have</h3><ul><li>TypeScript</li><li>Docker</li></ul>",
+    "gold": {
+      "required": [
+        "Node.js",
+        "Express.js",
+        "React",
+        "MongoDB"
+      ],
+      "preferred": [
+        "TypeScript",
+        "Docker"
+      ]
+    }
+  },
+  {
+    "id": "J12",
+    "title": "DevOps Engineer",
+    "company": "Bituin AI Lab",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Full-time",
+    "content": "<p>Run our cloud infrastructure.</p><h3>What you'll do</h3><ul><li>Automate deployments</li><li>Monitor systems</li></ul><h3>Requirements</h3><ul><li>3+ years of experience in DevOps</li><li>AWS</li><li>Docker and Kubernetes</li><li>Terraform</li><li>Linux</li></ul><h3>Nice to have</h3><ul><li>Python scripting</li></ul>",
+    "gold": {
+      "required": [
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "Terraform",
+        "Linux"
+      ],
+      "preferred": [
+        "Python"
+      ]
+    }
+  },
+  {
+    "id": "J13",
+    "title": "Junior Android Developer",
+    "company": "Ugnayan Media",
+    "location": "Cebu City, Cebu",
+    "workplace": "hybrid",
+    "commitment": "Full-time",
+    "content": "<p>Build our news reader app.</p><h3>What you'll do</h3><ul><li>Implement features in Kotlin</li><li>Fix crashes</li></ul><h3>Requirements</h3><ul><li>Kotlin or Java</li><li>Android Development</li><li>Git</li></ul><h3>Nice to have</h3><ul><li>Firebase</li><li>REST APIs</li></ul>",
+    "gold": {
+      "required": [
+        "Kotlin",
+        "Java",
+        "Android Development",
+        "Git"
+      ],
+      "preferred": [
+        "Firebase",
+        "REST APIs"
+      ]
+    }
+  },
+  {
+    "id": "J14",
+    "title": "Mobile Developer Intern (Flutter)",
+    "company": "Sari Commerce",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Internship",
+    "content": "<p>Help build our seller mobile app.</p><h3>What you'll do</h3><ul><li>Build Flutter screens</li></ul><h3>Requirements</h3><ul><li>Flutter</li><li>Dart</li><li>Git</li></ul><h3>Nice to have</h3><ul><li>Firebase</li></ul>",
+    "gold": {
+      "required": [
+        "Flutter",
+        "Dart",
+        "Git"
+      ],
+      "preferred": [
+        "Firebase"
+      ]
+    }
+  },
+  {
+    "id": "J15",
+    "title": "Accounting Assistant",
+    "company": "Masagana Holdings",
+    "location": "Makati, Metro Manila",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "content": "<p>Support month-end close.</p><h3>What you'll do</h3><ul><li>Prepare journal entries</li><li>Reconcile accounts</li></ul><h3>Requirements</h3><ul><li>Graduate of BS Accountancy</li><li>Bookkeeping</li><li>Microsoft Excel</li><li>Attention to detail</li></ul><h3>Nice to have</h3><ul><li>QuickBooks</li></ul>",
+    "gold": {
+      "required": [
+        "Accounting",
+        "Bookkeeping",
+        "Microsoft Excel",
+        "Attention to Detail"
+      ],
+      "preferred": [
+        "QuickBooks"
+      ]
+    }
+  },
+  {
+    "id": "J16",
+    "title": "Junior Accountant",
+    "company": "Masagana Holdings",
+    "location": "Ortigas, Pasig",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "content": "<p>Handle payables and tax filings.</p><h3>What you'll do</h3><ul><li>Process accounts payable</li><li>Prepare BIR forms</li></ul><h3>Requirements</h3><ul><li>0-2 years of experience in Accounting</li><li>Taxation basics</li><li>Microsoft Excel</li></ul><h3>Nice to have</h3><ul><li>QuickBooks or Xero</li><li>CPA eligibility</li></ul>",
+    "gold": {
+      "required": [
+        "Accounting",
+        "Taxation",
+        "Microsoft Excel"
+      ],
+      "preferred": [
+        "QuickBooks",
+        "Xero"
+      ]
+    }
+  },
+  {
+    "id": "J17",
+    "title": "Financial Analyst",
+    "company": "Tanglaw Fintech",
+    "location": "Taguig, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Full-time",
+    "content": "<p>Own forecasting for our lending book.</p><h3>What you'll do</h3><ul><li>Build financial models</li><li>Present to leadership</li></ul><h3>Requirements</h3><ul><li>3+ years of experience in finance</li><li>Financial modeling</li><li>Advanced Excel</li></ul><h3>Nice to have</h3><ul><li>SQL</li><li>Power BI</li></ul>",
+    "gold": {
+      "required": [
+        "Financial Analysis",
+        "Microsoft Excel"
+      ],
+      "preferred": [
+        "SQL",
+        "Power BI"
+      ]
+    }
+  },
+  {
+    "id": "J18",
+    "title": "Customer Service Representative (Voice)",
+    "company": "Kalinga Contact Center",
+    "location": "Cebu City, Cebu",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "content": "<p>Support customers of a US telecom brand.</p><h3>What you'll do</h3><ul><li>Handle inbound calls</li><li>Log tickets in our CRM</li></ul><h3>Requirements</h3><ul><li>Excellent English communication</li><li>Customer Service mindset</li><li>Fresh graduates and career shifters welcome</li></ul><h3>Nice to have</h3><ul><li>Call center experience</li></ul>",
+    "gold": {
+      "required": [
+        "English Proficiency",
+        "Communication",
+        "Customer Service"
+      ],
+      "preferred": [
+        "Call Center Operations",
+        "CRM"
+      ]
+    }
+  },
+  {
+    "id": "J19",
+    "title": "Technical Support Specialist",
+    "company": "Kalinga Contact Center",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Full-time",
+    "content": "<p>Troubleshoot software issues for SaaS customers.</p><h3>What you'll do</h3><ul><li>Diagnose issues over chat and email</li><li>Escalate bugs</li></ul><h3>Requirements</h3><ul><li>Technical Support or troubleshooting experience</li><li>Excellent English</li><li>Basic Networking</li></ul><h3>Nice to have</h3><ul><li>SQL</li><li>Zendesk</li></ul>",
+    "gold": {
+      "required": [
+        "Technical Support",
+        "English Proficiency",
+        "Networking"
+      ],
+      "preferred": [
+        "SQL",
+        "Zendesk"
+      ]
+    }
+  },
+  {
+    "id": "J20",
+    "title": "Customer Support Team Lead",
+    "company": "Kalinga Contact Center",
+    "location": "Cebu City, Cebu",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "content": "<p>Lead a team of 15 agents.</p><h3>What you'll do</h3><ul><li>Coach agents</li><li>Own team KPIs</li></ul><h3>Requirements</h3><ul><li>5+ years of experience in customer support</li><li>At least 2 years in a supervisory role</li><li>Leadership</li></ul><h3>Nice to have</h3><ul><li>Zendesk</li></ul>",
+    "gold": {
+      "required": [
+        "Customer Service",
+        "Leadership"
+      ],
+      "preferred": [
+        "Zendesk"
+      ]
+    }
+  },
+  {
+    "id": "J21",
+    "title": "Graphic Design Intern",
+    "company": "Ugnayan Media",
+    "location": "Quezon City, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Internship",
+    "content": "<p>Create visuals for our articles and social pages.</p><h3>What you'll do</h3><ul><li>Design social media graphics</li><li>Prepare print layouts</li></ul><h3>Requirements</h3><ul><li>Adobe Photoshop</li><li>Adobe Illustrator</li><li>A portfolio of design work</li></ul><h3>Nice to have</h3><ul><li>Canva</li><li>Video Editing</li></ul>",
+    "gold": {
+      "required": [
+        "Adobe Photoshop",
+        "Adobe Illustrator",
+        "Graphic Design"
+      ],
+      "preferred": [
+        "Canva",
+        "Video Editing"
+      ]
+    }
+  },
+  {
+    "id": "J22",
+    "title": "UI/UX Designer",
+    "company": "Sari Commerce",
+    "location": "Pasig, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Full-time",
+    "content": "<p>Design our seller experience.</p><h3>What you'll do</h3><ul><li>Run usability tests</li><li>Create high-fidelity prototypes</li></ul><h3>Requirements</h3><ul><li>2+ years of experience in UI/UX Design</li><li>Figma</li><li>Portfolio of shipped work</li></ul><h3>Nice to have</h3><ul><li>HTML and CSS</li></ul>",
+    "gold": {
+      "required": [
+        "UI/UX Design",
+        "Figma"
+      ],
+      "preferred": [
+        "HTML",
+        "CSS"
+      ]
+    }
+  },
+  {
+    "id": "J23",
+    "title": "IT Support Technician",
+    "company": "Masagana Holdings",
+    "location": "Makati, Metro Manila",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "content": "<p>Keep our offices running.</p><h3>What you'll do</h3><ul><li>Resolve help desk tickets</li><li>Set up user accounts in Active Directory</li></ul><h3>Requirements</h3><ul><li>Technical Support or help desk experience (OJT counts)</li><li>Windows Server</li><li>Networking</li></ul><h3>Nice to have</h3><ul><li>Linux</li></ul>",
+    "gold": {
+      "required": [
+        "Technical Support",
+        "Windows Server",
+        "Networking"
+      ],
+      "preferred": [
+        "Linux"
+      ]
+    }
+  },
+  {
+    "id": "J24",
+    "title": "Network Engineer",
+    "company": "Daloy Logistics",
+    "location": "Taguig, Metro Manila",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "content": "<p>Run our warehouse networks.</p><h3>What you'll do</h3><ul><li>Design and maintain LAN/WAN</li><li>Handle incidents</li></ul><h3>Requirements</h3><ul><li>3+ years of experience in network administration</li><li>CCNA-level Networking</li><li>Linux</li></ul><h3>Nice to have</h3><ul><li>Cybersecurity</li></ul>",
+    "gold": {
+      "required": [
+        "Networking",
+        "Linux"
+      ],
+      "preferred": [
+        "Cybersecurity"
+      ]
+    }
+  },
+  {
+    "id": "J25",
+    "title": "Digital Marketing Intern",
+    "company": "Ugnayan Media",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Internship",
+    "content": "<p>Grow our audience online.</p><h3>What you'll do</h3><ul><li>Schedule social posts</li><li>Report campaign results</li></ul><h3>Requirements</h3><ul><li>Social Media Marketing</li><li>Content Writing</li><li>Good written English</li></ul><h3>Nice to have</h3><ul><li>SEO</li><li>Google Analytics</li><li>Canva</li></ul>",
+    "gold": {
+      "required": [
+        "Social Media Marketing",
+        "Content Writing",
+        "English Proficiency"
+      ],
+      "preferred": [
+        "SEO",
+        "Google Analytics",
+        "Canva"
+      ]
+    }
+  },
+  {
+    "id": "J26",
+    "title": "Content Writer",
+    "company": "Lakbay Analytics",
+    "location": "Remote (Philippines)",
+    "workplace": "remote",
+    "commitment": "Full-time",
+    "text": "We are looking for a content writer to produce blog articles and newsletters about data and technology for small businesses. You will research topics, interview our analysts and write clear, engaging copy. Experience with SEO and WordPress helps. Fresh graduates with a strong writing sample are welcome to apply.",
+    "gold": {
+      "required": [
+        "Content Writing"
+      ],
+      "preferred": [
+        "SEO",
+        "WordPress"
+      ]
+    }
+  },
+  {
+    "id": "J27",
+    "title": "Recruitment Assistant",
+    "company": "Masagana Holdings",
+    "location": "Makati, Metro Manila",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "content": "<p>Support our HR team.</p><h3>What you'll do</h3><ul><li>Screen applicants</li><li>Schedule interviews</li></ul><h3>Requirements</h3><ul><li>Graduate of Psychology or HR-related course</li><li>Microsoft Office</li><li>Communication skills</li></ul><h3>Nice to have</h3><ul><li>Recruitment experience</li></ul>",
+    "gold": {
+      "required": [
+        "Microsoft Office",
+        "Communication"
+      ],
+      "preferred": [
+        "Recruitment"
+      ]
+    }
+  },
+  {
+    "id": "J28",
+    "title": "Talent Acquisition Specialist",
+    "company": "Tanglaw Fintech",
+    "location": "Taguig, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Full-time",
+    "content": "<p>Hire engineers and analysts.</p><h3>What you'll do</h3><ul><li>Own end-to-end hiring</li><li>Partner with hiring managers</li></ul><h3>Requirements</h3><ul><li>3+ years of experience in Recruitment</li><li>Sourcing on professional networks</li></ul><h3>Nice to have</h3><ul><li>CRM tools</li></ul>",
+    "gold": {
+      "required": [
+        "Recruitment"
+      ],
+      "preferred": [
+        "CRM"
+      ]
+    }
+  },
+  {
+    "id": "J29",
+    "title": "Operations Associate",
+    "company": "Halo-Halo Retail Group",
+    "location": "Calapan, Oriental Mindoro",
+    "workplace": "onsite",
+    "commitment": "Full-time",
+    "text": "Our provincial branch needs an operations associate to track inventory, prepare daily reports in Excel or Google Sheets, and coordinate deliveries with suppliers. Good communication and attention to detail are important. Fresh graduates are welcome.",
+    "gold": {
+      "required": [],
+      "preferred": [],
+      "mentioned": [
+        "Microsoft Excel",
+        "Google Sheets",
+        "Communication",
+        "Attention to Detail"
+      ]
+    }
+  },
+  {
+    "id": "J30",
+    "title": "QA Tester Intern",
+    "company": "Sari Commerce",
+    "location": "Pasig, Metro Manila",
+    "workplace": "hybrid",
+    "commitment": "Internship",
+    "content": "<p>Help us ship reliable releases.</p><h3>What you'll do</h3><ul><li>Execute test cases</li><li>Report bugs</li></ul><h3>Requirements</h3><ul><li>Attention to detail</li><li>Basic understanding of Software Testing</li></ul><h3>Nice to have</h3><ul><li>SQL</li><li>Playwright or Selenium</li></ul>",
+    "gold": {
+      "required": [
+        "Attention to Detail",
+        "Software Testing"
+      ],
+      "preferred": [
+        "SQL"
+      ]
+    }
+  }
+]
