@@ -38,7 +38,7 @@ Module: `backend/app/ml/embeddings.py`.
 | Backend | When used | Notes |
 |---|---|---|
 | Sentence Transformers (`all-MiniLM-L6-v2` by default) | `sentence-transformers` installed and the model loadable | **Pretrained** model, not fine-tuned by this project |
-| LSA (TF-IDF 1–2-grams + truncated SVD) | default fallback; always available | Fitted per request on the current job corpus plus the profile. `k = min(128, n_docs // 2)`, a heuristic chosen on the **demo** listings (not the benchmark) to stop LSA collapsing into plain TF-IDF on small corpora |
+| LSA (TF-IDF 1–2-grams + truncated SVD) | default fallback; always available | Fitted per request on the current job corpus plus the profile. `k = min(128, n_docs // 2)`, a heuristic chosen on the offline test-fixture listings (not the benchmark) to stop LSA collapsing into plain TF-IDF on small corpora |
 
 The profile document is built from the **structured, user-corrected** profile (target roles, summary, skills, experience, projects, education, certifications), not the raw resume text. Cosine similarity is clipped to [0, 1]. Every match result records which backend produced it. Absolute similarity values differ between backends, so scores from different backends aren't directly comparable.
 
@@ -73,7 +73,7 @@ score = 100 × Σ wᵢ·cᵢ / Σ wᵢ        (sum over components that could be
 
 ## 6. Explanations
 
-Module: `backend/app/ml/explain.py`. Explanations are assembled only from structured evidence: the three largest weighted contributions, matched and related skills with the posting line, skills not found, the user's own experience and projects that mention matched skills, preference checks, and caveats (demo data, stale listing, unstructured requirements, low evidence coverage). The optional LLM assistant may *rephrase* help for the user but never generates the match explanation.
+Module: `backend/app/ml/explain.py`. Explanations are assembled only from structured evidence: the three largest weighted contributions, matched and related skills with the posting line, skills not found, the user's own experience and projects that mention matched skills, preference checks, and caveats (stale listing, unstructured requirements, low evidence coverage). The optional LLM assistant may *rephrase* help for the user but never generates the match explanation.
 
 ## 7. Baselines and comparison
 

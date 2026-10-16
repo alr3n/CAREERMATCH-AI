@@ -349,3 +349,20 @@ def test_migration_purges_stored_demo_data(tmp_path):
     cols = {r[1] for r in con.execute("PRAGMA table_info(job_listings)")}
     assert {"posting_url", "source_platform"} <= cols
     con.close()
+
+
+def test_source_entries_accept_display_names():
+    from app.integrations.jobs.registry import parse_entries
+
+    assert parse_entries(["coins:Coins.ph", "ninjavan: Ninja Van ", "tala", "bad id:x", ""]) == [
+        ("coins", "Coins.ph"), ("ninjavan", "Ninja Van"), ("tala", "Tala"),
+    ]
+
+
+def test_lever_company_uses_configured_display_name(monkeypatch, production_providers):
+    from app.integrations.jobs import registry
+
+    monkeypatch.setattr(production_providers, "lever_sites_raw", "coins:Coins.ph")
+    [lever] = [p for p in registry.build_providers(production_providers) if p.provider == "lever"]
+    assert lever.identifier == "coins" and lever.display_name == "Coins.ph"
+    assert registry.configured_sources(production_providers)["lever"] == ["coins"]

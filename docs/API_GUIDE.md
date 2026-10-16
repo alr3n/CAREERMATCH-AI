@@ -45,10 +45,10 @@ Base path: `/api/v1`. Interactive OpenAPI docs: `http://localhost:8000/api/v1/do
 ### Jobs
 | Method | Path | Description |
 |---|---|---|
-| GET | `/jobs/sources` | Configured sources with status, known providers (`configured: true/false`), demo flag, unsupported-provider note |
+| GET | `/jobs/sources` | Configured sources with status and last error, known providers (`configured`, access terms), `last_successful_refresh_at`, location filter, unsupported-provider note |
 | POST | `/jobs/refresh` | Fetch from every configured provider (per-source cooldown) → per-source report: `ok`, `error`, `rate_limited` or `skipped_cooldown`, with counts |
-| GET | `/jobs/facets` | Counts for filters (categories, locations, skills, live vs. demo) |
-| GET | `/jobs` | Filtered list. Query: `q`, `employment_types`, `work_arrangements`, `experience_levels`, `categories`, `location`, `skills`, `checked_within_days`, `include_demo`, `saved_only`, `sort` (recently_checked, posted, title), `page`, `page_size` |
+| GET | `/jobs/facets` | Counts for filters (categories, locations, skills, source platforms, companies, listings with salary) and the last-checked time |
+| GET | `/jobs` | Filtered list. Query: `q` (title, company, description), `company`, `platforms`, `employment_types`, `work_arrangements`, `experience_levels`, `categories`, `location`, `skills`, `salary_min` + `salary_currency`, `has_salary`, `checked_within_days`, `saved_only`, `sort` (recently_checked, posted, title), `page`, `page_size`. Each item has `source_platform`, `posting_url` (original posting) and `apply_url` |
 | POST | `/jobs/search` | Same filters in a JSON body (also `salary_min`, `salary_currency`), and records the search in history |
 | GET | `/jobs/{id}` | Full listing with qualifications, tagged skills, freshness and `source_attribution` |
 
@@ -68,7 +68,7 @@ Example match summary:
   "components": {"semantic_similarity": 0.9, "required_skill_coverage": 0.83, "...": "..."},
   "matched_skills": ["SQL", "Python"], "missing_required": ["Power BI"],
   "top_reason": "4 of 6 required skills found in your resume, plus 2 related",
-  "job": {"title": "Data Analyst Intern", "is_demo": true, "...": "..."}
+  "job": {"title": "Data Analyst", "company": "Coins.ph", "source_platform": "Lever", "posting_url": "https://jobs.lever.co/coins/…", "...": "..."}
 }
 ```
 

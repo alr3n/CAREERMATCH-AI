@@ -65,7 +65,7 @@ export function TagInput({ label, values, onChange, placeholder, suggestions = [
         <div className="mt-2 flex flex-wrap items-center gap-1.5 text-sm">
           <span className="text-muted">Suggestions:</span>
           {unused.map((s) => (
-            <button key={s} type="button" className="rounded border border-line px-2 py-0.5 text-sm hover:border-teal hover:text-teal" onClick={() => add(s)}>
+            <button key={s} type="button" className="min-h-8 rounded border border-line px-2 py-0.5 text-sm hover:border-teal hover:text-teal max-md:min-h-11 max-md:px-3 pointer-coarse:min-h-11 pointer-coarse:px-3" onClick={() => add(s)}>
               + {s}
             </button>
           ))}

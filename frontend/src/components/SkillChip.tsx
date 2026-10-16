@@ -37,7 +37,7 @@ export function SkillChip({ skill, variant = "neutral", title, onRemove }: Props
         <button
           type="button"
           onClick={onRemove}
-          className="ml-1 rounded px-1 text-muted hover:bg-danger-tint hover:text-danger"
+          className="-my-1 -mr-1 ml-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded text-muted hover:bg-danger-tint hover:text-danger max-md:h-10 max-md:w-10 pointer-coarse:h-10 pointer-coarse:w-10"
           aria-label={`Remove ${skill}`}
         >
           ×

@@ -1,3 +1,6 @@
+import containerQueries from "@tailwindcss/container-queries";
+import plugin from "tailwindcss/plugin";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
@@ -40,5 +43,10 @@ export default {
       borderRadius: { sm: "4px", DEFAULT: "6px", lg: "10px" },
     },
   },
-  plugins: [],
+  plugins: [
+    // Size components by the space they actually get (job cards sit in columns of very different widths).
+    containerQueries,
+    // Larger touch targets only where the primary pointer is a finger (phones, tablets).
+    plugin(({ addVariant }) => addVariant("pointer-coarse", "@media (pointer: coarse)")),
+  ],
 };

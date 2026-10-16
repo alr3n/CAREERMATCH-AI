@@ -110,18 +110,21 @@ export function SkillsPage() {
                 Not found in your resume
               </span>
             </p>
-            <table className="sr-only">
-              <caption>Most requested skills</caption>
-              <tbody>
-                {chartData.map((d) => (
-                  <tr key={d.skill}>
-                    <td>{d.skill}</td>
-                    <td>{d.percent}%</td>
-                    <td>{d.user_has ? "in your resume" : "not found in your resume"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {/* sr-only on a wrapper: a table ignores the 1px width and would widen the page. */}
+            <div className="sr-only">
+              <table>
+                <caption>Most requested skills</caption>
+                <tbody>
+                  {chartData.map((d) => (
+                    <tr key={d.skill}>
+                      <td>{d.skill}</td>
+                      <td>{d.percent}%</td>
+                      <td>{d.user_has ? "in your resume" : "not found in your resume"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </section>
         </div>
       </div>

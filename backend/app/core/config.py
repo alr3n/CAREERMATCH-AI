@@ -53,11 +53,16 @@ class Settings(BaseSettings):
     # Philippine openings through public, documented job-board APIs.
     # Set any of these to an empty value to turn that source off.
     # ------------------------------------------------------------------
-    greenhouse_boards_raw: str = Field(default="xendit", alias="GREENHOUSE_BOARDS")
-    lever_sites_raw: str = Field(default="coins,lalamove,ninjavan,tala", alias="LEVER_SITES")
+    # Entries are "identifier" or "identifier:Company Name" (the name is shown
+    # when the provider's API has no company field, as with Lever).
+    greenhouse_boards_raw: str = Field(default="xendit:Xendit", alias="GREENHOUSE_BOARDS")
+    lever_sites_raw: str = Field(
+        default="coins:Coins.ph,lalamove:Lalamove,ninjavan:Ninja Van,tala:Tala", alias="LEVER_SITES"
+    )
     lever_region: Literal["global", "eu"] = "global"
     smartrecruiters_companies_raw: str = Field(
-        default="Sutherland,DeliveryHero,Grab,BoschGroup,Canva,HomeCredit", alias="SMARTRECRUITERS_COMPANIES"
+        default="Sutherland,DeliveryHero:Delivery Hero (foodpanda),Grab,BoschGroup:Bosch,Canva,HomeCredit:Home Credit",
+        alias="SMARTRECRUITERS_COMPANIES",
     )
     smartrecruiters_country: str = Field(default="ph", pattern=r"^([a-zA-Z]{2})?$")
     smartrecruiters_max_details: int = Field(default=100, ge=0, le=500)

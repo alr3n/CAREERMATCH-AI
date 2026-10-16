@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Starts a throwaway backend (SQLite, demo provider) and the built frontend.
+// Starts a throwaway backend (SQLite, offline test-fixture listings from
+// backend/tests, every real provider off) and the built frontend.
 // Set E2E_EXTERNAL=1 to run against servers you started yourself.
 const external = process.env.E2E_EXTERNAL === "1";
 const python = process.env.E2E_PYTHON ?? "python";
@@ -21,7 +22,7 @@ export default defineConfig({
     : [
         {
           command:
-            `bash -c "rm -f e2e.db && ${python} -m alembic upgrade head && ${python} -m uvicorn app.main:app --port 8000"`,
+            `bash -c "rm -f e2e.db && ${python} -m alembic upgrade head && ${python} -m tests.e2e_server --port 8000"`,
           cwd: "../backend",
           url: "http://localhost:8000/health/ready",
           reuseExistingServer: !process.env.CI,
@@ -31,11 +32,16 @@ export default defineConfig({
             DATABASE_URL: "sqlite:///./e2e.db",
             SECRET_KEY: "e2e-secret-key-that-is-long-enough-for-tests-only",
             CORS_ORIGINS: "http://localhost:4173",
-            ENABLE_DEMO_PROVIDER: "true",
             EMBEDDING_BACKEND: "lsa",
             STORAGE_DIR: "./e2e-storage",
+            AUTO_REFRESH_MINUTES: "0",
+            // The responsive suite signs in once per viewport.
+            RATE_LIMIT_AUTH: "100/60",
             GREENHOUSE_BOARDS: "",
             LEVER_SITES: "",
+            SMARTRECRUITERS_COMPANIES: "",
+            REMOTIVE_ENABLED: "false",
+            JSEARCH_API_KEY: "",
           },
         },
         {

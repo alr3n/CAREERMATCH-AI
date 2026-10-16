@@ -10,8 +10,9 @@
 └──────────────────────────────┘                                         │        ▼            ▼                    │
                                                                          │      ml/        integrations/            │
                                                                          │  (extraction,   (jobs: greenhouse,       │
-                                                                         │   scoring,       lever, demo;            │
-                                                                         │   explanations)  llm: anthropic)         │
+                                                                         │   scoring,       lever, smartrecr.,      │
+                                                                         │   explanations)  remotive, jsearch;      │
+                                                                         │                  llm: anthropic)         │
                                                                          └──────┬───────────────────┬───────────────┘
                                                                                 │ SQLAlchemy        │ httpx (outbound, public APIs)
                                                                                 ▼                   ▼
@@ -31,7 +32,7 @@ backend/
     services/       business logic (profile, resume, jobs, matching, skill gaps, assistant, audit)
     repositories/   reusable query builders (job filtering and pagination)
     integrations/
-      jobs/         provider abstraction + Greenhouse, Lever, demo providers
+      jobs/         provider abstraction + Greenhouse, Lever, SmartRecruiters, Remotive, JSearch; PH location filter
       llm/          optional Anthropic Messages API client
     ml/             taxonomy, extraction, job parsing, embeddings, scoring, baselines, metrics, explanations
     security/       password hashing, JWT, safe file handling

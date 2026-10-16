@@ -68,10 +68,10 @@ export function LandingPage() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 md:px-8">
         <Logo />
         <nav aria-label="Site" className="flex items-center gap-2 text-sm">
-          <a href="#how" className="hidden px-3 py-2 text-ink no-underline hover:text-teal sm:inline">
+          <a href="#how" className="hidden min-h-11 items-center px-3 py-2 text-ink no-underline hover:text-teal sm:inline-flex">
             How it works
           </a>
-          <a href="#privacy" className="hidden px-3 py-2 text-ink no-underline hover:text-teal sm:inline">
+          <a href="#privacy" className="hidden min-h-11 items-center px-3 py-2 text-ink no-underline hover:text-teal sm:inline-flex">
             Privacy
           </a>
           <Link to="/login" className="btn-ghost no-underline">

@@ -143,13 +143,14 @@ export function JobsPage() {
         </button>
       </form>
 
-      {/* One DOM order for every screen size: filters, results, sources. On large
-          screens the grid places filters and sources in the sidebar. */}
-      <div className="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:gap-x-8">
-        <div className="min-w-0 space-y-4 lg:col-start-1 lg:row-start-1">
+      {/* One DOM order for every screen size: filters, results, sources. From xl
+          (1280px, the app sidebar is also showing) the grid puts filters and
+          sources in a side column; below that filters collapse behind a button. */}
+      <div className="grid gap-6 xl:grid-cols-[18rem_minmax(0,1fr)] xl:grid-rows-[auto_1fr] xl:gap-x-8">
+        <div className="min-w-0 space-y-4 xl:col-start-1 xl:row-start-1">
           <button
             type="button"
-            className="btn-secondary w-full lg:hidden"
+            className="btn-secondary w-full xl:hidden"
             aria-expanded={showFilters}
             aria-controls="job-filters"
             onClick={() => setShowFilters((v) => !v)}
@@ -157,7 +158,7 @@ export function JobsPage() {
             {showFilters ? "Hide filters" : "Show filters"}
             {filterCount > 0 && <span className="num rounded-full bg-teal px-2 text-xs text-white">{filterCount}</span>}
           </button>
-          <div id="job-filters" className={`${showFilters ? "block" : "hidden"} lg:block`}>
+          <div id="job-filters" className={`${showFilters ? "block" : "hidden"} xl:block`}>
             <JobFilters
               key={JSON.stringify({ q: filters.q, location: filters.location })}
               value={filters}
@@ -171,7 +172,7 @@ export function JobsPage() {
             />
           </div>
         </div>
-        <section aria-labelledby="results-heading" aria-busy={jobs.loading} className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+        <section aria-labelledby="results-heading" aria-busy={jobs.loading} className="min-w-0 xl:col-start-2 xl:row-span-2 xl:row-start-1">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 id="results-heading" className="num text-lg font-semibold">
               {jobs.loading ? "Searching…" : `${total} listing${total === 1 ? "" : "s"}`}
@@ -179,7 +180,7 @@ export function JobsPage() {
             <label className="flex items-center gap-2 text-sm">
               Sort by
               <select
-                className="field-input w-auto py-1"
+                className="field-input w-auto"
                 value={filters.sort}
                 onChange={(e) => setFilters({ ...filters, sort: e.target.value as Filters["sort"], page: 1 })}
               >
@@ -246,7 +247,7 @@ export function JobsPage() {
             </nav>
           )}
         </section>
-        <div className="min-w-0 lg:col-start-1 lg:row-start-2 lg:self-start">
+        <div className="min-w-0 xl:col-start-1 xl:row-start-2 xl:self-start">
           <SourcesPanel reloadKey={sourcesKey} />
         </div>
       </div>

@@ -65,12 +65,28 @@ def _display(identifier: str) -> str:
     return identifier.replace("-", " ").replace("_", " ").title()
 
 
+def parse_entries(values: list[str]) -> list[tuple[str, str]]:
+    """Parse ``identifier`` or ``identifier:Display Name`` entries.
+
+    The display name is the operator's label for the company, used when the
+    provider's API has no company-name field (Lever). Invalid identifiers are
+    ignored.
+    """
+    entries: list[tuple[str, str]] = []
+    for value in values:
+        identifier, _, name = value.partition(":")
+        identifier, name = identifier.strip(), name.strip()[:80]
+        if _IDENTIFIER.match(identifier):
+            entries.append((identifier, name or _display(identifier)))
+    return entries
+
+
 def configured_sources(settings: Settings) -> dict[str, list[str]]:
     """Identifiers configured for each known provider (for status pages)."""
     return {
-        "greenhouse": [t for t in settings.greenhouse_boards if _IDENTIFIER.match(t)],
-        "lever": [s for s in settings.lever_sites if _IDENTIFIER.match(s)],
-        "smartrecruiters": [c for c in settings.smartrecruiters_companies if _IDENTIFIER.match(c)],
+        "greenhouse": [i for i, _ in parse_entries(settings.greenhouse_boards)],
+        "lever": [i for i, _ in parse_entries(settings.lever_sites)],
+        "smartrecruiters": [i for i, _ in parse_entries(settings.smartrecruiters_companies)],
         "remotive": ["remote-jobs"] if settings.remotive_enabled else [],
         # Queries, not the key, are shown.
         "jsearch": settings.jsearch_queries if settings.jsearch_configured else [],
@@ -79,19 +95,16 @@ def configured_sources(settings: Settings) -> dict[str, list[str]]:
 
 def build_providers(settings: Settings, transport: httpx.BaseTransport | None = None) -> list[JobProvider]:
     timeout = settings.provider_timeout_seconds
-    configured = configured_sources(settings)
     providers: list[JobProvider] = []
-    for token in configured["greenhouse"]:
-        providers.append(GreenhouseProvider(token, _display(token), timeout=timeout, transport=transport))
-    for site in configured["lever"]:
-        providers.append(
-            LeverProvider(site, _display(site), timeout=timeout, transport=transport, region=settings.lever_region)
-        )
-    for company in configured["smartrecruiters"]:
+    for token, name in parse_entries(settings.greenhouse_boards):
+        providers.append(GreenhouseProvider(token, name, timeout=timeout, transport=transport))
+    for site, name in parse_entries(settings.lever_sites):
+        providers.append(LeverProvider(site, name, timeout=timeout, transport=transport, region=settings.lever_region))
+    for company, name in parse_entries(settings.smartrecruiters_companies):
         providers.append(
             SmartRecruitersProvider(
                 company,
-                company,
+                name,
                 timeout=timeout,
                 transport=transport,
                 country=settings.smartrecruiters_country,

@@ -53,7 +53,7 @@ The primary market is the Philippines (it recognises local degree abbreviations,
 React + Vite SPA  ──HTTPS/JSON (Bearer JWT)──►  FastAPI
  pages / features / components                    api/routes → services → repositories → PostgreSQL
  services/api.ts (typed client)                   ml/ (extraction, parsing, embeddings, scoring, explain, metrics)
-                                                  integrations/jobs (Greenhouse, Lever, Demo) · integrations/llm (optional)
+                                                  integrations/jobs (Greenhouse, Lever, SmartRecruiters, Remotive, JSearch) · integrations/llm (optional)
 ```
 
 The ML code works on plain dataclasses and has no database dependency, so the evaluation script runs the **same** scoring code as the API. Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -112,7 +112,7 @@ npm ci
 npm run dev                    # http://localhost:5173
 ```
 
-Load real listings with `python -m app.cli refresh-jobs` (after configuring providers), or use **Refresh** in the app. With `ENABLE_DEMO_PROVIDER=true`, 20 clearly labelled fictional listings are available so the workflow can be tried offline. They show a "Demo data" badge everywhere, link only to `example.com`, and are disabled automatically in production.
+Listings are fetched automatically on first use and then every `AUTO_REFRESH_MINUTES` (default 6 hours). You can also run `python -m app.cli refresh-jobs` or use **Check for new listings** in the app. The defaults follow employers verified to have Philippine openings; no configuration is needed to see real jobs. There is no demo or sample data: if every source is unreachable, the app says no live listings are available. (Fictional listings exist only as an offline fixture for the automated tests in `backend/tests/`.)
 
 ## Configuration
 
@@ -120,13 +120,16 @@ All settings come from environment variables. `.env.example` lists them with com
 
 | Variable | Purpose |
 |---|---|
-| `APP_ENV` | `development`, `test` or `production`. In production the demo provider is off and a strong `SECRET_KEY` is required |
+| `APP_ENV` | `development`, `test` or `production`. In production a strong `SECRET_KEY` is required |
 | `SECRET_KEY` | JWT signing key, at least 32 random characters in production |
 | `DATABASE_URL` | SQLAlchemy URL (PostgreSQL recommended) |
 | `CORS_ORIGINS` | Allowed browser origins |
 | `MAX_UPLOAD_MB`, `STORAGE_DIR`, `RETAIN_RESUME_FILES` | Upload limits and optional retention of original files |
-| `GREENHOUSE_BOARDS`, `LEVER_SITES`, `LEVER_REGION` | Job sources (comma-separated board tokens or site names) |
-| `REFRESH_COOLDOWN_MINUTES`, `LISTING_STALE_DAYS` | Refresh throttling and the "stale listing" threshold |
+| `GREENHOUSE_BOARDS`, `LEVER_SITES`, `LEVER_REGION`, `SMARTRECRUITERS_COMPANIES`, `SMARTRECRUITERS_COUNTRY` | Employer job boards (`identifier` or `identifier:Company Name`, comma-separated) |
+| `REMOTIVE_ENABLED` | Remotive remote-jobs feed |
+| `JSEARCH_API_KEY`, `JSEARCH_QUERIES` | Optional JSearch aggregator (postings from LinkedIn, Indeed, Glassdoor, JobStreet). Server-side key |
+| `JOB_LOCATION_FILTER` | `ph` (default) keeps Philippine and PH-eligible remote postings; `none` keeps all |
+| `AUTO_REFRESH_MINUTES`, `REFRESH_COOLDOWN_MINUTES`, `LISTING_STALE_DAYS` | Background refresh, refresh throttling and the "stale listing" threshold |
 | `EMBEDDING_BACKEND`, `EMBEDDING_MODEL` | `auto`, `sentence-transformers` or `lsa` |
 | `LLM_PROVIDER`, `ANTHROPIC_API_KEY`, `LLM_MODEL` | Optional assistant LLM (`none` by default) |
 | `VITE_API_BASE_URL` | API base URL baked into the frontend build |
@@ -220,14 +223,16 @@ These are small, synthetic and indicative results. They say nothing about real-w
 
 ## Job providers
 
-| Provider | Status |
-|---|---|
-| Greenhouse Job Board API | Implemented (public GET, one company board per token) |
-| Lever Postings API | Implemented (public GET, one company site per name; global or EU) |
-| Demo | Implemented for offline demos and tests. Clearly labelled fictional data |
-| LinkedIn, JobStreet, Indeed, Kalibrr | **Not integrated.** There is no authorised API for this use, and the app does not scrape them |
+| Provider | Access | Status |
+|---|---|---|
+| Greenhouse Job Board API | Public | Live-verified 2026-10-16 (Xendit) |
+| Lever Postings API | Public | Live-verified (Coins.ph, Lalamove, Ninja Van, Tala) |
+| SmartRecruiters Posting API | Public | Live-verified (Sutherland, Delivery Hero, Grab, Bosch, Canva, Home Credit) |
+| Remotive Remote Jobs API | Public, attribution required | Live-verified |
+| JSearch (Google for Jobs aggregator) | Paid key | Implemented and unit-tested; needs `JSEARCH_API_KEY` to run live. The authorised route to LinkedIn, Indeed, Glassdoor and JobStreet postings |
+| LinkedIn, JobStreet, Indeed, Glassdoor, Kalibrr (direct) | — | **Not contacted directly.** None offers an authorised read API, and their terms forbid scraping |
 
-Endpoints and field mappings were checked against the official documentation and live responses in October 2026. The automated tests use recorded-format responses through `httpx.MockTransport`. Run a first live refresh in your own environment after setting `GREENHOUSE_BOARDS` or `LEVER_SITES`. If no provider is configured, the app says so and shows no invented listings. Details: [docs/EXTERNAL_INTEGRATIONS.md](docs/EXTERNAL_INTEGRATIONS.md).
+The first live run retrieved 259 real Philippine and PH-eligible listings from 12 sources, with every sampled original-posting link answering HTTP 200. Re-run it any time with the read-only **Live job sources** workflow (Actions tab). The automated tests use recorded-format responses through `httpx.MockTransport`. Details: [docs/EXTERNAL_INTEGRATIONS.md](docs/EXTERNAL_INTEGRATIONS.md).
 
 ## API
 

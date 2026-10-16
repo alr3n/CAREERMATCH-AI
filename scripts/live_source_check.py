@@ -21,6 +21,8 @@ Checks:
 from __future__ import annotations
 
 import argparse
+import base64
+import gzip
 import json
 import os
 import sys
@@ -226,11 +228,15 @@ def emit_annotations(report: dict, chunk: int = 3500) -> None:
     Annotations are readable through the public checks API, so a read-only
     workflow can share its results without artifacts or write access.
     """
+    # GitHub keeps at most 10 notices per step, so the report is gzipped and
+    # base64-encoded first (≈4x smaller).
     compact = json.dumps(report, separators=(",", ":"), default=str)
-    parts = [compact[i:i + chunk] for i in range(0, len(compact), chunk)]
-    for n, part in enumerate(parts, start=1):
-        escaped = part.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
-        print(f"::notice title=live-report {n}/{len(parts)}::{escaped}")
+    packed = base64.b64encode(gzip.compress(compact.encode("utf-8"), 9)).decode("ascii")
+    parts = [packed[i:i + chunk] for i in range(0, len(packed), chunk)]
+    if len(parts) > 10:
+        print(f"::warning::Report too large for annotations ({len(parts)} parts); see the artifact")
+    for n, part in enumerate(parts[:10], start=1):
+        print(f"::notice title=live-report-gz {n}/{len(parts)}::{part}")
 
 
 def main() -> int:

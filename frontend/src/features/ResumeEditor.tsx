@@ -234,7 +234,8 @@ export function ResumeEditor({ resume, onSave }: Props) {
         <TagInput label="Certifications and trainings" values={certifications} onChange={setCertifications} max={40} placeholder="e.g. Google Data Analytics Certificate" />
       </section>
 
-      <div className="sticky bottom-0 -mx-4 flex items-center gap-4 border-t border-line bg-paper/95 px-4 py-4 backdrop-blur md:-mx-10 md:px-10">
+      {/* Negative margins mirror the page padding in AppShell so the bar spans the content area. */}
+      <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line bg-paper/95 px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:-mx-10 lg:px-10">
         <button type="button" className="btn-primary" onClick={save} disabled={saving}>
           {saving ? "Saving…" : "Save corrections"}
         </button>
