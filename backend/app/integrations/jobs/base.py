@@ -12,6 +12,7 @@ not supply stay ``None``; nothing is invented to fill gaps.
 
 from __future__ import annotations
 
+import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -107,16 +108,37 @@ class HttpJobProvider(JobProvider):
         self.timeout = timeout
         self.transport = transport
 
+    # One polite retry for transient failures (timeouts, dropped connections,
+    # 502/503/504). Rate limits (429) and client errors are never retried.
+    retries: int = 1
+    retry_backoff_seconds: float = 2.0
+    _TRANSIENT_STATUS = frozenset({502, 503, 504})
+
     def _get_json(self, url: str, params: dict | None = None, headers: dict | None = None):
-        try:
-            with httpx.Client(
-                timeout=self.timeout, transport=self.transport, headers={"User-Agent": USER_AGENT, **(headers or {})}
-            ) as client:
-                response = client.get(url, params=params)
-        except httpx.TimeoutException:
-            raise ProviderError("The provider did not respond in time") from None
-        except httpx.HTTPError:
-            raise ProviderError("The provider could not be reached") from None
+        attempt = 0
+        while True:
+            try:
+                with httpx.Client(
+                    timeout=self.timeout, transport=self.transport, headers={"User-Agent": USER_AGENT, **(headers or {})}
+                ) as client:
+                    response = client.get(url, params=params)
+            except httpx.TimeoutException:
+                if attempt < self.retries:
+                    attempt += 1
+                    time.sleep(self.retry_backoff_seconds * attempt)
+                    continue
+                raise ProviderError("The provider did not respond in time") from None
+            except httpx.HTTPError:
+                if attempt < self.retries:
+                    attempt += 1
+                    time.sleep(self.retry_backoff_seconds * attempt)
+                    continue
+                raise ProviderError("The provider could not be reached") from None
+            if response.status_code in self._TRANSIENT_STATUS and attempt < self.retries:
+                attempt += 1
+                time.sleep(self.retry_backoff_seconds * attempt)
+                continue
+            break
         if response.status_code == 429:
             retry = response.headers.get("Retry-After")
             raise ProviderRateLimited(int(retry) if retry and retry.isdigit() else None)

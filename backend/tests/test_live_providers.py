@@ -366,3 +366,38 @@ def test_lever_company_uses_configured_display_name(monkeypatch, production_prov
     [lever] = [p for p in registry.build_providers(production_providers) if p.provider == "lever"]
     assert lever.identifier == "coins" and lever.display_name == "Coins.ph"
     assert registry.configured_sources(production_providers)["lever"] == ["coins"]
+
+
+def test_transient_failures_are_retried_once():
+    from app.integrations.jobs.greenhouse import GreenhouseProvider
+
+    calls = {"n": 0}
+
+    def flaky(request):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise httpx.ReadTimeout("slow", request=request)
+        return httpx.Response(200, json={"jobs": []})
+
+    assert GreenhouseProvider("acme", transport=httpx.MockTransport(flaky)).fetch().listings == []
+    assert calls["n"] == 2
+
+    calls["n"] = 0
+
+    def down(request):
+        calls["n"] += 1
+        return httpx.Response(503)
+
+    with pytest.raises(ProviderError, match="HTTP 503"):
+        GreenhouseProvider("acme", transport=httpx.MockTransport(down)).fetch()
+    assert calls["n"] == 2  # one retry, then give up
+
+    calls["n"] = 0
+
+    def limited(request):
+        calls["n"] += 1
+        return httpx.Response(429)
+
+    with pytest.raises(ProviderError):
+        GreenhouseProvider("acme", transport=httpx.MockTransport(limited)).fetch()
+    assert calls["n"] == 1  # rate limits are never retried

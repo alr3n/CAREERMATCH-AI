@@ -88,13 +88,13 @@ Counts change daily. The default employers are a starting set; replace them with
 | Background refresh in the API process (`AUTO_REFRESH_MINUTES`; 0 = off, use cron with `python -m app.cli refresh-jobs`) | every 360 min |
 | General per-source cooldown (`REFRESH_COOLDOWN_MINUTES`; bypassed by `--force`) | 10 min |
 | Provider minimum interval (never bypassed) | Remotive 360 min, JSearch 720 min |
-| Request timeout (`PROVIDER_TIMEOUT_SECONDS`) | 15 s |
+| Request timeout (`PROVIDER_TIMEOUT_SECONDS`) | 15 s, one retry on transient failure |
 
 ### Error handling
 
 | Situation | Behaviour |
 |---|---|
-| Provider unreachable or timeout | Source marked `error`. **Existing listings are kept** with their last-checked time; the UI shows "1 source is temporarily unavailable" with the reason |
+| Provider unreachable, timeout, HTTP 502/503/504 | Retried once after a short pause (never for 429 or other 4xx). If it still fails: source marked `error`. **Existing listings are kept** with their last-checked time; the UI shows "1 source is temporarily unavailable" with the reason |
 | HTTP 401/403 | "The provider refused the request … check the API key or access" (the key is never echoed) |
 | HTTP 429 | Source marked `rate_limited`; retried after the cooldown |
 | HTTP 404 | "Source '…' was not found at the provider" (wrong board token, site or company) |

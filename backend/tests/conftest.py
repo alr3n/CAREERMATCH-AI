@@ -48,6 +48,14 @@ from tests.fixture_jobs import FixtureProvider  # noqa: E402
 _real_build_providers = registry.build_providers
 
 
+@pytest.fixture(autouse=True)
+def _no_retry_backoff(monkeypatch):
+    """Provider retries happen instantly in tests."""
+    from app.integrations.jobs.base import HttpJobProvider
+
+    monkeypatch.setattr(HttpJobProvider, "retry_backoff_seconds", 0.0)
+
+
 @pytest.fixture()
 def production_providers():
     """Use only providers built from configuration, as in production (no fixture listings)."""
