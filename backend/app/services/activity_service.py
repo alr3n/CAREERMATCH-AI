@@ -37,7 +37,7 @@ def list_saved(db: Session, user: User, page: int, page_size: int) -> tuple[list
 
 def save_job(db: Session, user: User, job_id: uuid.UUID, note: str | None) -> SavedJobOut:
     job = db.get(JobListing, job_id)
-    if job is None or (job.is_demo and not get_settings().enable_demo_provider):
+    if job is None or job.is_demo:
         raise not_found("Job")
     saved = db.scalar(select(SavedJob).where(SavedJob.user_id == user.id, SavedJob.job_id == job_id))
     if saved is None:

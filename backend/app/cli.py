@@ -26,11 +26,12 @@ def _refresh(force: bool) -> int:
     failed = 0
     for r in results:
         print(f"{r.provider}/{r.identifier}: {r.status} fetched={r.fetched} created={r.created} "
-              f"updated={r.updated} expired={r.expired} invalid={r.skipped_invalid}"
+              f"updated={r.updated} expired={r.expired} invalid={r.skipped_invalid} filtered={r.filtered_out}"
               + (f" — {r.message}" if r.message else ""))
         failed += r.status in {"error", "rate_limited"}
     if not results:
-        print("No providers configured. Set GREENHOUSE_BOARDS / LEVER_SITES or ENABLE_DEMO_PROVIDER=true.")
+        print("No providers configured. Set GREENHOUSE_BOARDS, LEVER_SITES, SMARTRECRUITERS_COMPANIES, "
+              "REMOTIVE_ENABLED or JSEARCH_API_KEY + JSEARCH_QUERIES.")
     return 1 if failed else 0
 
 
@@ -42,7 +43,7 @@ def _sources() -> int:
     for s in info.sources:
         print(f"  {s.provider}/{s.identifier}: status={s.last_status} active={s.active_listings} "
               f"last_fetched={s.last_fetched_at}")
-    print(f"Demo provider: {'enabled' if info.demo_enabled else 'disabled'}")
+    print(f"Location filter: {info.location_filter}")
     return 0
 
 

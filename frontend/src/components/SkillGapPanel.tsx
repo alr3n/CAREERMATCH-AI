@@ -25,7 +25,7 @@ export function SkillGapPanel({ gaps, jobsAnalyzed }: { gaps: SkillGap[]; jobsAn
             {gap.examples.map((ex) => (
               <li key={`${ex.job_id}-${ex.requirement}`} className="text-muted">
                 <Link to={`/app/jobs/${ex.job_id}`}>{ex.title}</Link>
-                {ex.is_demo ? " (demo)" : ""}: “{ex.evidence}”
+                : “{ex.evidence}”
               </li>
             ))}
           </ul>

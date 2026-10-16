@@ -4,13 +4,25 @@ def _jobs(client, headers, **params):
     return response.json()
 
 
-def test_demo_listings_are_labelled(client, auth_headers):
+def test_listings_carry_source_and_original_links(client, auth_headers):
     body = _jobs(client, auth_headers, page_size=100)
     assert body["total"] == 20
     for item in body["items"]:
-        assert item["is_demo"] is True
-        assert "Demo" in item["company"]
+        assert "is_demo" not in item
+        assert item["source_platform"] == "Test fixture"
         assert item["apply_url"].startswith("https://example.com/")
+        assert item["posting_url"].startswith("https://example.com/")
+
+
+def test_company_platform_and_salary_filters(client, auth_headers):
+    kalye = _jobs(client, auth_headers, company="kalye", page_size=100)["items"]
+    assert kalye and all(j["company"] == "Kalye Commerce" for j in kalye)
+    by_platform = _jobs(client, auth_headers, platforms="Test fixture", page_size=100)
+    assert by_platform["total"] == 20
+    assert _jobs(client, auth_headers, platforms="LinkedIn")["total"] == 0
+    paid = _jobs(client, auth_headers, has_salary=True, page_size=100)["items"]
+    assert paid and all(j["salary_min"] is not None for j in paid)
+    assert len(paid) < 20  # listings without salary are not given one
 
 
 def test_filters_operate_on_stored_data(client, auth_headers):
@@ -38,7 +50,7 @@ def test_salary_filter_only_uses_listings_with_salary(client, auth_headers):
 def test_job_detail_has_attribution_and_requirements(client, auth_headers):
     job = _jobs(client, auth_headers, q="Data Analyst Intern")["items"][0]
     detail = client.get(f"/api/v1/jobs/{job['id']}", headers=auth_headers).json()
-    assert "DEMO DATA" in detail["source_attribution"]
+    assert "Retrieved from" in detail["source_attribution"] and "Test fixture" in detail["source_attribution"]
     levels = {s["skill"]: s["requirement"] for s in detail["skills"]}
     assert levels["SQL"] == "required" and levels["Power BI"] == "preferred"
     assert detail["required_qualifications"]
@@ -58,7 +70,10 @@ def test_search_is_recorded_without_resume_data(client, auth_headers, db):
 
 def test_facets(client, auth_headers):
     body = client.get("/api/v1/jobs/facets", headers=auth_headers).json()
-    assert body["demo_active"] == 20 and body["live_active"] == 0
+    assert body["total_active"] == 20 and "demo_active" not in body
+    assert body["platforms"] == [{"value": "Test fixture", "count": 20}]
+    assert 0 < body["with_salary"] < 20
+    assert any(c["value"] == "Kalye Commerce" for c in body["companies"])
     assert any(c["value"] == "Data & Analytics" for c in body["categories"])
 
 

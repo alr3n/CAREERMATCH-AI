@@ -15,21 +15,25 @@ from app.schemas.job import JobFilters
 
 
 def visible_listings() -> Select:
-    """Active, non-duplicate listings from enabled sources."""
+    """Active, non-duplicate listings from enabled sources.
+
+    Rows flagged ``is_demo`` (left behind by the removed demo provider) are
+    always excluded, so fictional data can never reach the API.
+    """
     return (
         select(JobListing)
         .join(JobSource, JobSource.id == JobListing.source_id)
         .where(
             JobListing.status == "active",
             JobListing.duplicate_of_id.is_(None),
+            JobListing.is_demo.is_(False),
             JobSource.enabled.is_(True),
+            JobSource.is_demo.is_(False),
         )
     )
 
 
-def apply_filters(stmt: Select, filters: JobFilters, user_id: uuid.UUID | None, demo_allowed: bool) -> Select:
-    if not (filters.include_demo and demo_allowed):
-        stmt = stmt.where(JobListing.is_demo.is_(False))
+def apply_filters(stmt: Select, filters: JobFilters, user_id: uuid.UUID | None) -> Select:
     if filters.q:
         terms = [t for t in filters.q.split() if t][:8]
         for term in terms:
@@ -49,6 +53,16 @@ def apply_filters(stmt: Select, filters: JobFilters, user_id: uuid.UUID | None, 
         stmt = stmt.where(JobListing.experience_level.in_(filters.experience_levels))
     if filters.categories:
         stmt = stmt.where(JobListing.category.in_(filters.categories))
+    if filters.company:
+        stmt = stmt.where(func.lower(JobListing.company).like(f"%{filters.company.lower()}%"))
+    if filters.platforms:
+        wanted = [p.lower() for p in filters.platforms]
+        stmt = stmt.where(
+            or_(
+                func.lower(func.coalesce(JobListing.source_platform, "")).in_(wanted),
+                func.lower(JobListing.provider).in_(wanted),
+            )
+        )
     if filters.location:
         stmt = stmt.where(func.lower(func.coalesce(JobListing.location, "")).like(f"%{filters.location.lower()}%"))
     for skill in filters.skills:
@@ -63,6 +77,10 @@ def apply_filters(stmt: Select, filters: JobFilters, user_id: uuid.UUID | None, 
         )
         if filters.salary_currency:
             stmt = stmt.where(JobListing.salary_currency == filters.salary_currency)
+    if filters.has_salary:
+        stmt = stmt.where(
+            or_(JobListing.salary_min.is_not(None), JobListing.salary_max.is_not(None), JobListing.salary_text.is_not(None))
+        )
     if filters.checked_within_days:
         stmt = stmt.where(JobListing.last_checked_at >= utcnow() - timedelta(days=filters.checked_within_days))
     if filters.saved_only and user_id is not None:

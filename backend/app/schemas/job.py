@@ -39,12 +39,14 @@ class JobSummaryOut(BaseModel):
     posted_at: datetime | None
     deadline: datetime | None
     apply_url: str
+    posting_url: str
     last_checked_at: datetime
     freshness: Freshness
     status: str
     provider: str
+    provider_name: str
     source_name: str
-    is_demo: bool
+    source_platform: str
     is_saved: bool = False
     required_skills: list[str] = []
 
@@ -62,6 +64,8 @@ class JobDetailOut(JobSummaryOut):
 
 class JobFilters(BaseModel):
     q: str | None = Field(default=None, max_length=200, description="Keywords matched against title, company, description")
+    company: str | None = Field(default=None, max_length=120, description="Company name contains this text")
+    platforms: list[str] = Field(default_factory=list, max_length=20, description="Source platforms, e.g. Lever, LinkedIn")
     employment_types: list[EmploymentType] = []
     work_arrangements: list[WorkArrangement] = []
     experience_levels: list[ExperienceLevel] = []
@@ -70,8 +74,8 @@ class JobFilters(BaseModel):
     skills: list[str] = Field(default_factory=list, max_length=20, description="Listing must mention all of these skills")
     salary_min: Decimal | None = Field(default=None, ge=0, description="Only listings with salary data at or above this")
     salary_currency: str | None = Field(default=None, pattern=r"^[A-Z]{3}$")
+    has_salary: bool = Field(default=False, description="Only listings that publish salary information")
     checked_within_days: int | None = Field(default=None, ge=1, le=365)
-    include_demo: bool = True
     saved_only: bool = False
     sort: Literal["recently_checked", "posted", "title"] = "recently_checked"
     page: int = Field(default=1, ge=1)
@@ -83,7 +87,6 @@ class JobSourceOut(ORMModel):
     provider: str
     identifier: str
     display_name: str
-    is_demo: bool
     enabled: bool
     last_fetched_at: datetime | None
     last_status: str
@@ -99,13 +102,15 @@ class ProviderStatus(BaseModel):
     sources: list[str]
     docs: str
     notes: str
+    access: str
     config_variable: str
 
 
 class SourcesResponse(BaseModel):
     sources: list[JobSourceOut]
     providers: list[ProviderStatus]
-    demo_enabled: bool
+    last_successful_refresh_at: datetime | None
+    location_filter: str
     unsupported_note: str
 
 
@@ -119,6 +124,7 @@ class RefreshItem(BaseModel):
     expired: int = 0
     duplicates: int = 0
     skipped_invalid: int = 0
+    filtered_out: int = 0
     message: str | None = None
 
 
@@ -134,9 +140,10 @@ class FacetCount(BaseModel):
 
 class FacetsOut(BaseModel):
     total_active: int
-    live_active: int
-    demo_active: int
+    with_salary: int
     categories: list[FacetCount]
     locations: list[FacetCount]
     skills: list[FacetCount]
+    platforms: list[FacetCount]
+    companies: list[FacetCount]
     last_checked_at: datetime | None

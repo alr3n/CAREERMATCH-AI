@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import logging
+import re
 import threading
 import uuid
 from collections import Counter
 from datetime import UTC, datetime, timedelta
+from urllib.parse import urlsplit
 
 import httpx
 from sqlalchemy import func, select
@@ -16,8 +18,10 @@ from sqlalchemy.orm import Session, selectinload
 from app.core.config import Settings, get_settings
 from app.core.errors import AppError, not_found
 from app.db.base import utcnow
+from app.integrations.jobs import registry
 from app.integrations.jobs.base import JobProvider, ProviderError, ProviderListing, ProviderRateLimited
-from app.integrations.jobs.registry import KNOWN_PROVIDERS, build_providers
+from app.integrations.jobs.location import passes_filter
+from app.integrations.jobs.registry import KNOWN_PROVIDERS
 from app.ml.job_parser import (
     classify_category,
     classify_employment_type,
@@ -44,12 +48,15 @@ from app.schemas.job import (
 )
 
 logger = logging.getLogger(__name__)
+# Provider keys whose listings are re-published copies (lose ties when deduplicating).
+_AGGREGATORS = frozenset({"jsearch"})
 _refresh_lock = threading.Lock()
 _sources_lock = threading.Lock()
 
 UNSUPPORTED_NOTE = (
-    "LinkedIn, JobStreet, Indeed and similar sites are not integrated: they do not offer an authorised public "
-    "API for this use, and scraping them would violate their terms. Only the providers listed here are used."
+    "LinkedIn, JobStreet, Indeed, Glassdoor and Kalibrr are not contacted directly: none offers an authorised public "
+    "API for reading listings, and their terms forbid scraping. Their postings can be included through the JSearch "
+    "aggregator when a JSEARCH_API_KEY is configured. Every listing links to its original posting."
 )
 
 
@@ -86,7 +93,7 @@ def _sync_sources(db: Session, providers: list[JobProvider]) -> dict[tuple[str, 
                 provider=provider.provider,
                 identifier=provider.identifier,
                 display_name=provider.display_name,
-                is_demo=provider.is_demo,
+                is_demo=False,
             )
             try:
                 with db.begin_nested():
@@ -108,12 +115,12 @@ def _sync_sources(db: Session, providers: list[JobProvider]) -> dict[tuple[str, 
 
 def list_sources(db: Session, settings: Settings | None = None) -> SourcesResponse:
     settings = settings or get_settings()
-    sync_sources(db, build_providers(settings))
+    sync_sources(db, registry.build_providers(settings))
     db.commit()
     counts = dict(
         db.execute(
             select(JobListing.source_id, func.count(JobListing.id))
-            .where(JobListing.status == "active", JobListing.duplicate_of_id.is_(None))
+            .where(JobListing.status == "active", JobListing.duplicate_of_id.is_(None), JobListing.is_demo.is_(False))
             .group_by(JobListing.source_id)
         ).all()
     )
@@ -122,22 +129,27 @@ def list_sources(db: Session, settings: Settings | None = None) -> SourcesRespon
         out = JobSourceOut.model_validate(source)
         out.active_listings = counts.get(source.id, 0)
         sources.append(out)
-    providers = []
-    for key, info in KNOWN_PROVIDERS.items():
-        configured = settings.greenhouse_boards if key == "greenhouse" else settings.lever_sites
-        providers.append(
-            ProviderStatus(
-                provider=key,
-                name=info["name"],
-                configured=bool(configured),
-                sources=configured,
-                docs=info["docs"],
-                notes=info["notes"],
-                config_variable=info["config"],
-            )
+    configured = registry.configured_sources(settings)
+    providers = [
+        ProviderStatus(
+            provider=key,
+            name=info["name"],
+            configured=bool(configured[key]),
+            sources=configured[key],
+            docs=info["docs"],
+            notes=info["notes"],
+            access=info["access"],
+            config_variable=info["config"],
         )
+        for key, info in KNOWN_PROVIDERS.items()
+    ]
+    last_ok = max((_aware(s.last_fetched_at) for s in sources if s.last_fetched_at), default=None)
     return SourcesResponse(
-        sources=sources, providers=providers, demo_enabled=settings.enable_demo_provider, unsupported_note=UNSUPPORTED_NOTE
+        sources=sources,
+        providers=providers,
+        last_successful_refresh_at=last_ok,
+        location_filter=settings.job_location_filter,
+        unsupported_note=UNSUPPORTED_NOTE,
     )
 
 
@@ -181,6 +193,8 @@ def normalise(listing: ProviderListing) -> dict:
         "posted_at": _aware(listing.posted_at),
         "deadline": _aware(listing.deadline),
         "apply_url": listing.apply_url[:1000],
+        "posting_url": (listing.posting_url or listing.apply_url)[:1000],
+        "source_platform": (listing.source_platform or None) and listing.source_platform[:120],
         "content_fingerprint": fingerprint(listing.company, listing.title, listing.location, full_text),
         "_skills": parsed.skills,
     }
@@ -207,7 +221,7 @@ def _ingest(db: Session, source: JobSource, listings: list[ProviderListing], now
                 source_id=source.id,
                 provider=source.provider,
                 external_id=listing.external_id,
-                is_demo=source.is_demo,
+                is_demo=False,
                 last_checked_at=now,
                 **data,
             )
@@ -236,17 +250,47 @@ def _ingest(db: Session, source: JobSource, listings: list[ProviderListing], now
     return item
 
 
+def _norm_key(*parts: str | None) -> str:
+    return "|".join(re.sub(r"[^a-z0-9]+", " ", (p or "").lower()).strip() for p in parts)
+
+
+def _norm_url(url: str | None) -> str:
+    if not url:
+        return ""
+    parsed = urlsplit(url.strip())
+    return f"{parsed.netloc.lower().removeprefix('www.')}{parsed.path.rstrip('/')}"
+
+
 def _mark_duplicates(db: Session) -> int:
+    """Hide repeated postings, keeping one canonical listing.
+
+    Three keys identify the same posting: identical content fingerprint, the
+    same original posting URL, or — across *different* sources — the same
+    company, title and location (an aggregator re-publishing an employer's own
+    posting). Employer boards win over aggregators; otherwise the oldest row wins.
+    """
     rows = db.scalars(
-        select(JobListing).where(JobListing.status == "active").order_by(JobListing.created_at, JobListing.id)
+        select(JobListing).where(JobListing.status == "active", JobListing.is_demo.is_(False))
     ).all()
-    canonical: dict[str, JobListing] = {}
+    rows = sorted(rows, key=lambda j: (j.provider in _AGGREGATORS, _aware(j.created_at) or utcnow(), str(j.id)))
+    by_fingerprint: dict[str, JobListing] = {}
+    by_url: dict[str, JobListing] = {}
+    by_title: dict[str, JobListing] = {}
     duplicates = 0
     for job in rows:
-        first = canonical.get(job.content_fingerprint)
+        url_key = _norm_url(job.posting_url or job.apply_url)
+        title_key = _norm_key(job.company, job.title, job.location)
+        first = by_fingerprint.get(job.content_fingerprint) or (url_key and by_url.get(url_key))
         if first is None:
-            canonical[job.content_fingerprint] = job
+            candidate = by_title.get(title_key)
+            if candidate is not None and candidate.source_id != job.source_id:
+                first = candidate
+        if first is None:
             job.duplicate_of_id = None
+            by_fingerprint[job.content_fingerprint] = job
+            if url_key:
+                by_url[url_key] = job
+            by_title.setdefault(title_key, job)
         else:
             job.duplicate_of_id = first.id
             duplicates += 1
@@ -265,20 +309,23 @@ def refresh_jobs(
     if not _refresh_lock.acquire(blocking=False):
         raise AppError(409, "refresh_in_progress", "A refresh is already running. Please try again shortly.")
     try:
-        providers = build_providers(settings, transport=transport)
+        providers = registry.build_providers(settings, transport=transport)
         sources = sync_sources(db, providers)
         now = utcnow()
         results: list[RefreshItem] = []
         for provider in providers:
             source = sources[(provider.provider, provider.identifier)]
             last = _aware(source.last_fetched_at)
-            if not force and last and now - last < timedelta(minutes=settings.refresh_cooldown_minutes):
+            # The provider's own minimum interval (its usage terms) always applies;
+            # the general cooldown can be bypassed with force.
+            cooldown = max(provider.min_interval_minutes, 0 if force else settings.refresh_cooldown_minutes)
+            if cooldown and last and now - last < timedelta(minutes=cooldown):
                 results.append(
                     RefreshItem(
                         provider=source.provider,
                         identifier=source.identifier,
                         status="skipped_cooldown",
-                        message=f"Checked less than {settings.refresh_cooldown_minutes} minutes ago",
+                        message=f"Checked less than {cooldown} minutes ago",
                     )
                 )
                 continue
@@ -295,12 +342,22 @@ def refresh_jobs(
                 results.append(RefreshItem(provider=source.provider, identifier=source.identifier,
                                            status="error", message=exc.message))
                 continue
-            item = _ingest(db, source, fetched.listings, now)
+            listings = fetched.listings
+            filtered_out = 0
+            if provider.needs_location_filter:
+                listings = [x for x in fetched.listings if passes_filter(x, settings.job_location_filter)]
+                filtered_out = len(fetched.listings) - len(listings)
+            item = _ingest(db, source, listings, now)
             item.skipped_invalid = fetched.skipped_invalid
+            item.filtered_out = filtered_out
+            logger.info(
+                "Provider %s/%s ok: fetched=%d kept=%d new=%d closed=%d",
+                source.provider, source.identifier, len(fetched.listings), len(listings), item.created, item.expired,
+            )
             source.last_fetched_at = now
             source.last_status = "ok"
             source.last_error = None
-            source.last_fetch_count = len(fetched.listings)
+            source.last_fetch_count = len(listings)
             results.append(item)
         duplicates = _mark_duplicates(db)
         if results:
@@ -336,6 +393,7 @@ def freshness(last_checked: datetime, settings: Settings | None = None) -> str:
 
 
 def to_summary(job: JobListing, saved: set[uuid.UUID]) -> JobSummaryOut:
+    provider_platform = KNOWN_PROVIDERS.get(job.provider, {}).get("name", job.provider)
     return JobSummaryOut(
         id=job.id,
         title=job.title,
@@ -353,12 +411,14 @@ def to_summary(job: JobListing, saved: set[uuid.UUID]) -> JobSummaryOut:
         posted_at=job.posted_at,
         deadline=job.deadline,
         apply_url=job.apply_url,
+        posting_url=job.posting_url or job.apply_url,
         last_checked_at=job.last_checked_at,
         freshness=freshness(job.last_checked_at),
         status=job.status,
         provider=job.provider,
+        provider_name=provider_platform,
         source_name=job.source.display_name if job.source else job.provider,
-        is_demo=job.is_demo,
+        source_platform=job.source_platform or provider_platform,
         is_saved=job.id in saved,
         required_skills=[s.skill for s in job.skills if s.requirement == "required"][:10],
     )
@@ -366,12 +426,15 @@ def to_summary(job: JobListing, saved: set[uuid.UUID]) -> JobSummaryOut:
 
 def to_detail(job: JobListing, saved: set[uuid.UUID]) -> JobDetailOut:
     summary = to_summary(job, saved)
-    provider_name = KNOWN_PROVIDERS.get(job.provider, {}).get("name", "Demo provider")
-    attribution = (
-        "DEMO DATA — fictional listing generated for demonstration; not a real vacancy."
-        if job.is_demo
-        else f"Retrieved from the {provider_name} for '{job.source.display_name}'. Content is provided by the employer."
-    )
+    provider_name = summary.provider_name
+    if job.provider in _AGGREGATORS and job.source_platform:
+        attribution = (
+            f"Published on {job.source_platform}; retrieved through the {provider_name}. "
+            "Content is provided by the employer — check the original posting before applying."
+        )
+    else:
+        source = job.source.display_name if job.source else job.provider
+        attribution = f"Retrieved from the {provider_name} for '{source}'. Content is provided by the employer."
     return JobDetailOut(
         **summary.model_dump(),
         description=job.description,
@@ -386,8 +449,7 @@ def to_detail(job: JobListing, saved: set[uuid.UUID]) -> JobDetailOut:
 
 
 def search(db: Session, user: User, filters: JobFilters, record_history: bool = False):
-    settings = get_settings()
-    stmt = repo.apply_filters(repo.visible_listings(), filters, user.id, settings.enable_demo_provider)
+    stmt = repo.apply_filters(repo.visible_listings(), filters, user.id)
     rows, total = repo.paginate(db, repo.order(stmt, filters.sort), filters.page, filters.page_size)
     saved = repo.saved_ids(db, user.id, [j.id for j in rows])
     if record_history:
@@ -403,27 +465,26 @@ def get_job(db: Session, user: User, job_id: uuid.UUID) -> JobDetailOut:
         .options(selectinload(JobListing.skills), selectinload(JobListing.source))
         .where(JobListing.id == job_id)
     )
-    if job is None or (job.is_demo and not get_settings().enable_demo_provider):
+    if job is None or job.is_demo:
         raise not_found("Job")
     return to_detail(job, repo.saved_ids(db, user.id, [job.id]))
 
 
 def facets(db: Session) -> FacetsOut:
-    settings = get_settings()
-    base = repo.visible_listings()
-    if not settings.enable_demo_provider:
-        base = base.where(JobListing.is_demo.is_(False))
-    jobs = db.scalars(base.options(selectinload(JobListing.skills))).all()
+    jobs = db.scalars(repo.visible_listings().options(selectinload(JobListing.skills), selectinload(JobListing.source))).all()
     categories = Counter(j.category or "Other" for j in jobs)
     locations = Counter((j.location or "Unspecified").split(",")[0].strip() for j in jobs)
     skills = Counter(s.skill for j in jobs for s in j.skills if s.requirement in {"required", "preferred"})
+    platforms = Counter(j.source_platform or KNOWN_PROVIDERS.get(j.provider, {}).get("name", j.provider) for j in jobs)
+    companies = Counter(j.company for j in jobs)
     last = max((_aware(j.last_checked_at) for j in jobs), default=None)
     return FacetsOut(
         total_active=len(jobs),
-        live_active=sum(1 for j in jobs if not j.is_demo),
-        demo_active=sum(1 for j in jobs if j.is_demo),
+        with_salary=sum(1 for j in jobs if j.salary_min is not None or j.salary_max is not None or j.salary_text),
         categories=[FacetCount(value=k, count=v) for k, v in categories.most_common()],
         locations=[FacetCount(value=k, count=v) for k, v in locations.most_common(25)],
         skills=[FacetCount(value=k, count=v) for k, v in skills.most_common(40)],
+        platforms=[FacetCount(value=k, count=v) for k, v in platforms.most_common()],
+        companies=[FacetCount(value=k, count=v) for k, v in companies.most_common(40)],
         last_checked_at=last,
     )

@@ -29,10 +29,11 @@ class JobSource(UUIDPk, Timestamps, Base):
     __tablename__ = "job_sources"
     __table_args__ = (UniqueConstraint("provider", "identifier", name="uq_job_sources_provider_identifier"),)
 
-    provider: Mapped[str] = mapped_column(String(32), nullable=False)  # greenhouse | lever | demo
+    # greenhouse | lever | smartrecruiters | remotive | jsearch
+    provider: Mapped[str] = mapped_column(String(32), nullable=False)
     identifier: Mapped[str] = mapped_column(String(120), nullable=False)
     display_name: Mapped[str] = mapped_column(String(200), nullable=False)
-    is_demo: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_demo: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)  # legacy, always False
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     last_fetched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # never | ok | error | rate_limited
@@ -82,6 +83,10 @@ class JobListing(UUIDPk, Timestamps, Base):
     posted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     apply_url: Mapped[str] = mapped_column(String(1000), nullable=False)
+    # Public page of the original posting; may equal apply_url.
+    posting_url: Mapped[str | None] = mapped_column(String(1000))
+    # Where the posting was published, e.g. "Lever" or "LinkedIn" (via an aggregator).
+    source_platform: Mapped[str | None] = mapped_column(String(120))
     last_checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
     # active | expired
     status: Mapped[str] = mapped_column(String(16), default="active", nullable=False)
@@ -89,6 +94,8 @@ class JobListing(UUIDPk, Timestamps, Base):
     duplicate_of_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid, ForeignKey("job_listings.id", ondelete="SET NULL")
     )
+    # Legacy column from the removed demo provider. Always False; listings with
+    # True are excluded from every query (see job_repository.visible_listings).
     is_demo: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     source: Mapped[JobSource] = relationship(back_populates="listings")

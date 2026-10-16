@@ -1,5 +1,5 @@
 import type { JobDetail } from "../types/api";
-import { ARRANGEMENT_LABEL, EMPLOYMENT_LABEL, LEVEL_LABEL, formatDate, formatSalary } from "../utils/format";
+import { ARRANGEMENT_LABEL, EMPLOYMENT_LABEL, LEVEL_LABEL, NOT_SPECIFIED, formatDate, salaryOf } from "../utils/format";
 import { ListingFreshnessIndicator } from "./ListingFreshnessIndicator";
 import { SkillChip } from "./SkillChip";
 import { SourceBadge } from "./SourceBadge";
@@ -13,7 +13,8 @@ interface Props {
 
 /** Source-provided facts about a listing. AI analysis is rendered elsewhere and labelled as such. */
 export function JobDetailPanel({ job, userSkills, onToggleSave, saving }: Props) {
-  const salary = formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_interval) ?? job.salary_text;
+  const salary = salaryOf(job);
+  const separateApply = job.apply_url !== job.posting_url;
   const variant = (skill: string) => (userSkills ? (userSkills.has(skill.toLowerCase()) ? "matched" : "missing") : "neutral");
   const required = job.skills.filter((s) => s.requirement === "required");
   const preferred = job.skills.filter((s) => s.requirement === "preferred");
@@ -22,22 +23,29 @@ export function JobDetailPanel({ job, userSkills, onToggleSave, saving }: Props)
     <section aria-labelledby="job-title" className="space-y-6">
       <header className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <SourceBadge provider={job.provider} sourceName={job.source_name} isDemo={job.is_demo} />
+          <SourceBadge job={job} />
           <ListingFreshnessIndicator lastChecked={job.last_checked_at} freshness={job.freshness} />
           {job.status !== "active" && <span className="rounded bg-danger-tint px-2 py-0.5 text-xs font-semibold text-danger">No longer listed</span>}
         </div>
-        <h1 id="job-title" className="text-2xl font-bold md:text-3xl">
+        <h1 id="job-title" className="break-words text-2xl font-bold md:text-3xl">
           {job.title}
         </h1>
-        <p className="text-muted">
-          {job.company}
-          {job.location ? `, ${job.location}` : ""}
+        <p className="break-words text-muted">
+          <span className="font-semibold text-ink">{job.company}</span>
+          <span aria-hidden="true"> · </span>
+          {job.location ?? `Location ${NOT_SPECIFIED.toLowerCase()}`}
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
           <a href={job.apply_url} target="_blank" rel="noopener noreferrer" className="btn-primary no-underline">
-            {job.is_demo ? "Open demo link" : "Apply on the employer's site"}
+            Apply on {job.source_platform}
             <span className="sr-only"> (opens in a new tab)</span>
           </a>
+          {separateApply && (
+            <a href={job.posting_url} target="_blank" rel="noopener noreferrer" className="btn-secondary no-underline">
+              View original posting
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          )}
           <button type="button" className="btn-secondary" onClick={onToggleSave} disabled={saving} aria-pressed={job.is_saved}>
             {job.is_saved ? "Saved" : "Save job"}
           </button>
@@ -45,7 +53,7 @@ export function JobDetailPanel({ job, userSkills, onToggleSave, saving }: Props)
       </header>
 
       <div className="panel p-5">
-        <h2 className="text-lg font-semibold">From the posting</h2>
+        <h2 className="text-lg font-semibold">From the original posting</h2>
         <p className="mt-1 text-sm text-muted">{job.source_attribution}</p>
         <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
           <div>
@@ -65,7 +73,7 @@ export function JobDetailPanel({ job, userSkills, onToggleSave, saving }: Props)
           </div>
           <div>
             <dt className="text-muted">Salary</dt>
-            <dd className="num">{salary ?? "Not published"}</dd>
+            <dd className="num break-words">{salary ?? NOT_SPECIFIED}</dd>
           </div>
           <div>
             <dt className="text-muted">Posted</dt>
@@ -74,6 +82,18 @@ export function JobDetailPanel({ job, userSkills, onToggleSave, saving }: Props)
           <div>
             <dt className="text-muted">Application deadline</dt>
             <dd>{formatDate(job.deadline)}</dd>
+          </div>
+          <div>
+            <dt className="text-muted">Source platform</dt>
+            <dd>{job.source_platform}</dd>
+          </div>
+          <div className="min-w-0">
+            <dt className="text-muted">Original posting</dt>
+            <dd className="truncate">
+              <a href={job.posting_url} target="_blank" rel="noopener noreferrer" title={job.posting_url}>
+                {hostOf(job.posting_url)}
+              </a>
+            </dd>
           </div>
         </dl>
       </div>
@@ -134,8 +154,18 @@ export function JobDetailPanel({ job, userSkills, onToggleSave, saving }: Props)
 
       <div className="panel p-5">
         <h2 className="text-lg font-semibold">Full description</h2>
-        <div className="mt-3 max-w-prose space-y-2 whitespace-pre-line text-sm leading-relaxed">{job.description || "The provider did not include a description."}</div>
+        <div className="mt-3 max-w-prose space-y-2 whitespace-pre-line break-words text-sm leading-relaxed">
+          {job.description || "The provider did not include a description. Open the original posting for full details."}
+        </div>
       </div>
     </section>
   );
+}
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
 }

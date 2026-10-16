@@ -185,11 +185,11 @@ def test_invalid_schema():
 
 
 @pytest.fixture()
-def live_settings(monkeypatch):
-    settings = get_settings()
+def live_settings(monkeypatch, production_providers):
+    """Production-like provider set: only configured sources, no fixture listings."""
+    settings = production_providers
     monkeypatch.setattr(settings, "greenhouse_boards_raw", "acme")
     monkeypatch.setattr(settings, "lever_sites_raw", "acme")
-    monkeypatch.setattr(settings, "enable_demo_provider", False)
     return settings
 
 
@@ -207,6 +207,7 @@ def test_refresh_ingests_and_records_freshness(db, live_settings):
     assert len(jobs) == 2
     for job in jobs:
         assert job.apply_url.startswith("https://") and job.last_checked_at is not None
+        assert job.posting_url.startswith("https://") and job.source_platform in {"Greenhouse", "Lever"}
         assert job.is_demo is False
 
 
@@ -254,14 +255,18 @@ def test_cooldown_skips_recent_sources(db, live_settings):
     assert {r.status for r in results} == {"skipped_cooldown"}
 
 
-def test_unconfigured_providers_reported_honestly(client, auth_headers, monkeypatch):
-    monkeypatch.setattr(get_settings(), "enable_demo_provider", False)
+@pytest.mark.no_fixture_listings
+def test_unconfigured_providers_reported_honestly(client, auth_headers):
     body = client.get("/api/v1/jobs/sources", headers=auth_headers).json()
     assert all(p["configured"] is False for p in body["providers"])
-    assert body["sources"] == [] and body["demo_enabled"] is False
-    assert "LinkedIn" in body["unsupported_note"]
+    assert {p["provider"] for p in body["providers"]} == {"greenhouse", "lever", "smartrecruiters", "remotive", "jsearch"}
+    assert body["sources"] == [] and "demo_enabled" not in body
+    assert body["last_successful_refresh_at"] is None
+    assert "LinkedIn" in body["unsupported_note"] and "JSearch" in body["unsupported_note"]
+    # No source configured: the API returns nothing rather than invented jobs.
     listing = client.get("/api/v1/jobs", headers=auth_headers).json()
     assert listing["total"] == 0 and listing["items"] == []
+    assert client.get("/api/v1/jobs/facets", headers=auth_headers).json()["total_active"] == 0
 
 
 def test_concurrent_source_sync_is_safe(db_engine):

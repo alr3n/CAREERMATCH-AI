@@ -55,7 +55,6 @@ def test_match_detail_explains_recommendation(client, auth_headers, uploaded_res
     detail = client.get(f"/api/v1/matches/{match_id}", headers=auth_headers).json()
     kinds = {e["kind"] for e in detail["evidence"]}
     assert {"reason", "matched_skill"} <= kinds
-    assert "caveat" in kinds  # demo data is always flagged
     assert detail["job"]["apply_url"] and detail["job"]["last_checked_at"]
     assert set(detail["component_labels"]) == set(detail["components"])
 

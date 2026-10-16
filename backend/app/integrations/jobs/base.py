@@ -1,9 +1,13 @@
 """Provider abstraction for job sources.
 
 A provider fetches postings from one configured endpoint (a Greenhouse board,
-a Lever site, …) and returns ``ProviderListing`` objects. Normalisation,
-skill extraction, deduplication and persistence are provider-independent, so
-adding a source means implementing ``fetch`` only.
+a Lever site, a SmartRecruiters company, an aggregator query …) and returns
+``ProviderListing`` objects. Normalisation, skill extraction, location
+filtering, deduplication and persistence are provider-independent, so adding a
+source means implementing ``fetch`` only.
+
+Every listing must come from the provider's response. Fields the provider does
+not supply stay ``None``; nothing is invented to fill gaps.
 """
 
 from __future__ import annotations
@@ -42,6 +46,10 @@ class ProviderListing:
     title: str
     company: str
     apply_url: str
+    # Public page of the original posting (may equal ``apply_url``).
+    posting_url: str | None = None
+    # Where the posting was published, e.g. "LinkedIn" for an aggregator result.
+    source_platform: str | None = None
     content_html: str | None = None
     content_text: str | None = None
     sections: list[tuple[str, list[str]]] = field(default_factory=list)
@@ -67,7 +75,17 @@ class FetchResult:
 
 class JobProvider(ABC):
     provider: str = "base"
-    is_demo: bool = False
+    # Human-readable platform name shown as the listing's source.
+    platform: str = "Unknown"
+    # Minimum minutes between fetches, from the provider's own usage guidance.
+    # Applied on top of REFRESH_COOLDOWN_MINUTES and not bypassed by --force.
+    min_interval_minutes: int = 0
+    # True when the provider returns postings from many countries, so the
+    # configured location filter (JOB_LOCATION_FILTER) must be applied.
+    needs_location_filter: bool = False
+    # Aggregators re-publish postings that may also exist on an employer's own
+    # board. When duplicates are found the employer's own posting is kept.
+    is_aggregator: bool = False
 
     def __init__(self, identifier: str, display_name: str | None = None) -> None:
         self.identifier = identifier
@@ -89,10 +107,10 @@ class HttpJobProvider(JobProvider):
         self.timeout = timeout
         self.transport = transport
 
-    def _get_json(self, url: str, params: dict | None = None):
+    def _get_json(self, url: str, params: dict | None = None, headers: dict | None = None):
         try:
             with httpx.Client(
-                timeout=self.timeout, transport=self.transport, headers={"User-Agent": USER_AGENT}
+                timeout=self.timeout, transport=self.transport, headers={"User-Agent": USER_AGENT, **(headers or {})}
             ) as client:
                 response = client.get(url, params=params)
         except httpx.TimeoutException:
@@ -102,6 +120,9 @@ class HttpJobProvider(JobProvider):
         if response.status_code == 429:
             retry = response.headers.get("Retry-After")
             raise ProviderRateLimited(int(retry) if retry and retry.isdigit() else None)
+        if response.status_code in (401, 403):
+            # Never echo the request (it may carry an API key) — only the status.
+            raise ProviderError(f"The provider refused the request (HTTP {response.status_code}); check the API key or access")
         if response.status_code == 404:
             raise ProviderError(f"Source '{self.identifier}' was not found at the provider")
         if response.status_code >= 400:
@@ -119,3 +140,10 @@ def parse_iso(value: str | None) -> datetime | None:
         return datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
         return None
+
+
+def https_url(value: str | None) -> str | None:
+    """Return the URL if it is an absolute https URL, else ``None``."""
+    if value and value.startswith("https://") and len(value) <= 1000:
+        return value
+    return None

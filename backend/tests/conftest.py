@@ -18,9 +18,15 @@ os.environ.setdefault("APP_ENV", "test")
 os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL") or f"sqlite:///{_TMP / 'test.db'}"
 os.environ["STORAGE_DIR"] = str(_TMP / "storage")
 os.environ["SECRET_KEY"] = "test-secret-key-that-is-long-enough-for-hs256-signing"
-os.environ["ENABLE_DEMO_PROVIDER"] = "true"
+# No real provider is contacted by the test suite; network-backed providers are
+# exercised with recorded responses through httpx.MockTransport.
 os.environ["GREENHOUSE_BOARDS"] = ""
 os.environ["LEVER_SITES"] = ""
+os.environ["SMARTRECRUITERS_COMPANIES"] = ""
+os.environ["REMOTIVE_ENABLED"] = "false"
+os.environ["JSEARCH_API_KEY"] = ""
+os.environ["JSEARCH_QUERIES"] = ""
+os.environ["AUTO_REFRESH_MINUTES"] = "0"
 os.environ["EMBEDDING_BACKEND"] = "lsa"
 os.environ["LLM_PROVIDER"] = "none"
 
@@ -35,7 +41,33 @@ import app.models  # noqa: E402,F401
 from app.core.rate_limit import rate_limiter  # noqa: E402
 from app.db import session as db_session  # noqa: E402
 from app.db.base import Base  # noqa: E402
+from app.integrations.jobs import registry  # noqa: E402
 from app.main import create_app  # noqa: E402
+from tests.fixture_jobs import FixtureProvider  # noqa: E402
+
+_real_build_providers = registry.build_providers
+
+
+@pytest.fixture()
+def production_providers():
+    """Use only providers built from configuration, as in production (no fixture listings)."""
+    return get_settings()
+
+
+@pytest.fixture(autouse=True)
+def offline_fixture_listings(request, monkeypatch):
+    """Add the offline fixture provider unless a test opts out.
+
+    Mark a test ``@pytest.mark.no_fixture_listings`` to see only the providers
+    built from configuration (as in production).
+    """
+    if request.node.get_closest_marker("no_fixture_listings") or "production_providers" in request.fixturenames:
+        return
+    monkeypatch.setattr(
+        registry,
+        "build_providers",
+        lambda settings, transport=None: _real_build_providers(settings, transport) + [FixtureProvider()],
+    )
 
 
 @pytest.fixture()

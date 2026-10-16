@@ -23,7 +23,6 @@ class MatchFilters(BaseModel):
     categories: list[str] = Field(default_factory=list, max_length=20)
     location: str | None = Field(default=None, max_length=120)
     checked_within_days: int | None = Field(default=None, ge=1, le=365)
-    include_demo: bool = True
 
 
 class MatchRequest(BaseModel):

@@ -38,21 +38,44 @@ export function JobFilters({ value, facets, onApply, showSearch = true, showSala
   }
 
   function reset() {
-    const cleared: Filters = { include_demo: true, sort: draft.sort ?? "recently_checked", page: 1 };
+    const cleared: Filters = { sort: draft.sort ?? "recently_checked", page: 1 };
     setDraft(cleared);
     onApply(cleared);
   }
 
   return (
-    <form onSubmit={submit} className="panel space-y-5 p-5" aria-label="Job filters">
+    <form onSubmit={submit} className="panel space-y-5 p-4 sm:p-5" aria-label="Job filters">
       {showSearch && (
         <div>
           <label htmlFor="filter-q" className="field-label">
-            Keywords
+            Job title or keywords
           </label>
-          <input id="filter-q" className="field-input" value={draft.q ?? ""} onChange={(e) => set("q", e.target.value)} placeholder="e.g. data analyst, React" />
+          <input
+            id="filter-q"
+            type="search"
+            className="field-input"
+            value={draft.q ?? ""}
+            onChange={(e) => set("q", e.target.value)}
+            placeholder="e.g. data analyst, React"
+          />
         </div>
       )}
+      <div>
+        <label htmlFor="filter-company" className="field-label">
+          Company
+        </label>
+        <input
+          id="filter-company"
+          className="field-input"
+          list="filter-companies"
+          value={draft.company ?? ""}
+          onChange={(e) => set("company", e.target.value)}
+          placeholder="e.g. Grab, Coins.ph"
+        />
+        <datalist id="filter-companies">
+          {facets?.companies.map((c) => <option key={c.value} value={c.value} />)}
+        </datalist>
+      </div>
       <CheckboxGroup legend="Employment type" options={TYPES} values={draft.employment_types ?? []} onChange={(v) => set("employment_types", v)} />
       <CheckboxGroup legend="Work arrangement" options={ARRANGEMENTS} values={draft.work_arrangements ?? []} onChange={(v) => set("work_arrangements", v)} />
       <CheckboxGroup legend="Experience level" options={LEVELS} values={draft.experience_levels ?? []} onChange={(v) => set("experience_levels", v)} />
@@ -90,6 +113,26 @@ export function JobFilters({ value, facets, onApply, showSearch = true, showSala
           ))}
         </select>
       </div>
+      {facets && facets.platforms.length > 1 && (
+        <div>
+          <label htmlFor="filter-platform" className="field-label">
+            Source
+          </label>
+          <select
+            id="filter-platform"
+            className="field-input"
+            value={draft.platforms?.[0] ?? ""}
+            onChange={(e) => set("platforms", e.target.value ? [e.target.value] : [])}
+          >
+            <option value="">All sources</option>
+            {facets.platforms.map((p) => (
+              <option key={p.value} value={p.value}>
+                {p.value} ({p.count})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div>
         <label htmlFor="filter-skill" className="field-label">
           Requires skill
@@ -126,6 +169,15 @@ export function JobFilters({ value, facets, onApply, showSearch = true, showSala
             }}
           />
           <p className="mt-1 text-xs text-muted">Only listings that publish a salary are shown when this is set.</p>
+          <label className="mt-3 flex min-h-11 items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-teal"
+              checked={draft.has_salary ?? false}
+              onChange={(e) => set("has_salary", e.target.checked)}
+            />
+            Only listings with salary information{facets ? ` (${facets.with_salary})` : ""}
+          </label>
         </div>
       )}
       <div>
@@ -144,18 +196,12 @@ export function JobFilters({ value, facets, onApply, showSearch = true, showSala
           <option value="30">Within 30 days</option>
         </select>
       </div>
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" className="accent-teal" checked={draft.saved_only ?? false} onChange={(e) => set("saved_only", e.target.checked)} />
+      <label className="flex min-h-11 items-center gap-2 text-sm">
+        <input type="checkbox" className="h-4 w-4 accent-teal" checked={draft.saved_only ?? false} onChange={(e) => set("saved_only", e.target.checked)} />
         Saved jobs only
       </label>
-      {facets && facets.demo_active > 0 && (
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" className="accent-teal" checked={draft.include_demo ?? true} onChange={(e) => set("include_demo", e.target.checked)} />
-          Include demo listings ({facets.demo_active})
-        </label>
-      )}
-      <div className="flex gap-2">
-        <button type="submit" className="btn-primary">
+      <div className="sticky bottom-0 -mx-4 flex gap-2 border-t border-line bg-surface px-4 py-3 sm:static sm:mx-0 sm:border-0 sm:p-0">
+        <button type="submit" className="btn-primary flex-1 sm:flex-none">
           Apply filters
         </button>
         <button type="button" className="btn-ghost" onClick={reset}>

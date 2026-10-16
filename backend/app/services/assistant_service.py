@@ -55,7 +55,7 @@ def _load(db: Session, user: User, job_id: uuid.UUID) -> tuple[CandidateProfile,
     if resume is None:
         raise AppError(400, "resume_required", "Upload a resume first so suggestions can be grounded in it.")
     job = db.scalar(select(JobListing).options(selectinload(JobListing.skills)).where(JobListing.id == job_id))
-    if job is None or (job.is_demo and not get_settings().enable_demo_provider):
+    if job is None or job.is_demo:
         raise not_found("Job")
     return candidate_from(resume, user), job
 

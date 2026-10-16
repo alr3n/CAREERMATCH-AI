@@ -56,9 +56,13 @@ def list_jobs(
     experience_levels: list[ExperienceLevel] = Query(default=[]),
     categories: list[str] = Query(default=[]),
     location: str | None = Query(default=None, max_length=120),
+    company: str | None = Query(default=None, max_length=120),
+    platforms: list[str] = Query(default=[]),
     skills: list[str] = Query(default=[]),
+    salary_min: float | None = Query(default=None, ge=0),
+    salary_currency: str | None = Query(default=None, pattern=r"^[A-Z]{3}$"),
+    has_salary: bool = False,
     checked_within_days: int | None = Query(default=None, ge=1, le=365),
-    include_demo: bool = True,
     saved_only: bool = False,
     sort: str = Query(default="recently_checked", pattern="^(recently_checked|posted|title)$"),
     page: int = Query(default=1, ge=1),
@@ -69,8 +73,9 @@ def list_jobs(
     job_service.ensure_jobs_loaded(db)
     filters = JobFilters(
         q=q, employment_types=employment_types, work_arrangements=work_arrangements,
-        experience_levels=experience_levels, categories=categories, location=location, skills=skills,
-        checked_within_days=checked_within_days, include_demo=include_demo, saved_only=saved_only,
+        experience_levels=experience_levels, categories=categories, location=location, company=company,
+        platforms=platforms, skills=skills, salary_min=salary_min, salary_currency=salary_currency,
+        has_salary=has_salary, checked_within_days=checked_within_days, saved_only=saved_only,
         sort=sort, page=page, page_size=page_size,
     )
     items, total = job_service.search(db, user, filters)

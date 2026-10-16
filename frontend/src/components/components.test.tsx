@@ -26,17 +26,49 @@ describe("MatchScore", () => {
 });
 
 describe("JobCard", () => {
-  it("labels demo data and shows matched and missing skills", () => {
+  it("shows the source, the original posting link and matched and missing skills", () => {
     render(
       <MemoryRouter>
         <JobCard job={job()} match={match()} weights={weights} detailHref="/app/matches/match-1" onToggleSave={() => {}} />
       </MemoryRouter>,
     );
-    expect(screen.getByText("Demo data, not a real job")).toBeInTheDocument();
+    expect(screen.getByText("Source:")).toBeInTheDocument();
+    expect(screen.getByText("Lever")).toBeInTheDocument();
+    expect(screen.queryByText(/demo/i)).not.toBeInTheDocument();
     expect(screen.getByText("Power BI")).toBeInTheDocument();
     expect(screen.getByText("Required, not found in your resume")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View details" })).toHaveAttribute("href", "/app/matches/match-1");
-    expect(screen.getByRole("link", { name: /Demo link/ })).toHaveAttribute("href", "https://example.com/demo-jobs/1");
+    expect(screen.getByRole("link", { name: /View original posting/ })).toHaveAttribute("href", "https://jobs.lever.co/test-company/1");
+    expect(screen.getByRole("link", { name: /^Apply/ })).toHaveAttribute("href", "https://jobs.lever.co/test-company/1/apply");
+  });
+
+  it("says when the provider did not supply a field instead of inventing one", () => {
+    render(
+      <MemoryRouter>
+        <JobCard
+          job={job({ salary_min: null, salary_max: null, salary_currency: null, location: null, posted_at: null })}
+          detailHref="/x"
+          onToggleSave={() => {}}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText("Salary not specified")).toBeInTheDocument();
+    expect(screen.getByText("Location not specified")).toBeInTheDocument();
+    expect(screen.getByText("Posting date not specified")).toBeInTheDocument();
+  });
+
+  it("aggregated listings name the platform they were published on", () => {
+    render(
+      <MemoryRouter>
+        <JobCard
+          job={job({ provider: "jsearch", provider_name: "JSearch", source_platform: "LinkedIn", apply_url: "https://www.linkedin.com/jobs/view/1", posting_url: "https://www.linkedin.com/jobs/view/1" })}
+          detailHref="/x"
+          onToggleSave={() => {}}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText("LinkedIn via JSearch")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Apply on LinkedIn/ })).toHaveAttribute("href", "https://www.linkedin.com/jobs/view/1");
   });
 
   it("calls the save handler", async () => {
@@ -54,18 +86,19 @@ describe("JobCard", () => {
 describe("JobFilters", () => {
   it("applies the selected filters and can clear them", async () => {
     const onApply = vi.fn();
-    render(<JobFilters value={{ include_demo: true }} onApply={onApply} />);
-    await userEvent.type(screen.getByLabelText("Keywords"), "analyst");
+    render(<JobFilters value={{}} onApply={onApply} />);
+    await userEvent.type(screen.getByLabelText("Job title or keywords"), "analyst");
+    await userEvent.type(screen.getByLabelText("Company"), "Grab");
     const types = screen.getByRole("group", { name: "Employment type" });
     await userEvent.click(within(types).getByLabelText("Internship"));
     await userEvent.click(screen.getByLabelText("Remote"));
     await userEvent.type(screen.getByLabelText("Location"), "Cebu");
     await userEvent.click(screen.getByRole("button", { name: "Apply filters" }));
     expect(onApply).toHaveBeenLastCalledWith(
-      expect.objectContaining({ q: "analyst", employment_types: ["internship"], work_arrangements: ["remote"], location: "Cebu", page: 1 }),
+      expect.objectContaining({ q: "analyst", company: "Grab", employment_types: ["internship"], work_arrangements: ["remote"], location: "Cebu", page: 1 }),
     );
     await userEvent.click(screen.getByRole("button", { name: "Clear" }));
-    expect(onApply).toHaveBeenLastCalledWith(expect.objectContaining({ include_demo: true, page: 1 }));
+    expect(onApply).toHaveBeenLastCalledWith(expect.objectContaining({ page: 1 }));
     expect(onApply.mock.lastCall?.[0].q).toBeUndefined();
   });
 });
@@ -84,7 +117,7 @@ describe("SkillGapPanel", () => {
               preferred_count: 1,
               priority: 5,
               in_development_list: true,
-              examples: [{ job_id: "j1", title: "BI Intern", company: "Co", requirement: "required", evidence: "Power BI dashboards", is_demo: false }],
+              examples: [{ job_id: "j1", title: "BI Intern", company: "Co", requirement: "required", evidence: "Power BI dashboards" }],
             },
           ]}
         />

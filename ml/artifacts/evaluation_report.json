@@ -430,15 +430,6 @@
       "unknown_experience_level": 0.2,
       "missing_location": 0.0
     },
-    "demo_listings": {
-      "listings": 20,
-      "duplicate_rate": 0.0,
-      "https_apply_links": 1.0,
-      "unknown_work_arrangement": 0.0,
-      "unknown_employment_type": 0.0,
-      "unknown_experience_level": 0.1,
-      "missing_location": 0.0
-    },
     "not_measured": [
       "Working source links (needs network access to the providers; checked per refresh in production via HTTP status).",
       "Share of expired listings still displayed: expired listings are excluded by query; verify on a live database."

@@ -53,7 +53,7 @@ export function MatchesPage() {
     const body: MatchRequest = {
       preset: preset === "custom" ? "balanced" : preset,
       weights: preset === "custom" ? custom : null,
-      filters: { employment_types: types, work_arrangements: arrangements, include_demo: true },
+      filters: { employment_types: types, work_arrangements: arrangements },
       limit: 50,
     };
     try {
