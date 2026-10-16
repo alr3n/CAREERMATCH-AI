@@ -44,6 +44,8 @@ class _GreenhouseJob(BaseModel):
 
 class GreenhouseProvider(HttpJobProvider):
     provider = "greenhouse"
+    platform = "Greenhouse"
+    needs_location_filter = True  # boards list every office worldwide
 
     def fetch(self) -> FetchResult:
         payload = self._get_json(f"{BASE_URL}/{self.identifier}/jobs", params={"content": "true"})
@@ -66,6 +68,8 @@ class GreenhouseProvider(HttpJobProvider):
                     title=job.title.strip(),
                     company=(job.company_name or self.display_name).strip(),
                     apply_url=job.absolute_url,
+                    posting_url=job.absolute_url,
+                    source_platform=self.platform,
                     content_html=job.content or "",
                     location=job.location.name if job.location else None,
                     department=next((d.name for d in job.departments if d.name), None),

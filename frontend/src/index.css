@@ -6,6 +6,14 @@
   html {
     -webkit-text-size-adjust: 100%;
   }
+  /* Media never forces the page wider than the screen. */
+  img,
+  svg,
+  video,
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
   body {
     @apply bg-paper text-ink font-sans antialiased;
     font-feature-settings: "tnum" 0;
@@ -26,7 +34,8 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    /* 44px minimum height: a comfortable touch target (WCAG 2.5.5). */
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded px-4 py-2 text-center text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
     @apply btn bg-teal text-white hover:bg-teal-dark;
@@ -44,7 +53,8 @@
     @apply mb-1 block text-sm font-semibold text-ink;
   }
   .field-input {
-    @apply w-full rounded border border-line bg-surface px-3 py-2 text-base text-ink placeholder:text-muted/70 focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/20;
+    /* 16px text stops iOS zooming into focused fields; 44px height for touch. */
+    @apply min-h-11 w-full min-w-0 rounded border border-line bg-surface px-3 py-2 text-base text-ink placeholder:text-muted/70 focus:border-teal focus:outline-none focus:ring-2 focus:ring-teal/20;
   }
   .panel {
     @apply rounded-lg border border-line bg-surface;

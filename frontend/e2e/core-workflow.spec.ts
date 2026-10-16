@@ -32,8 +32,8 @@ test("upload, review, search, match, open, save, then delete everything", async 
   // 3. Search available jobs
   await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Find jobs" }).click();
   await expect(page.getByText(/^\d+ listings?$/)).toBeVisible();
-  await page.getByLabel("Keywords").fill("analyst");
-  await page.getByRole("button", { name: "Apply filters" }).click();
+  await page.getByLabel("Job title, keyword or company").fill("analyst");
+  await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Data Analyst Intern" })).toBeVisible();
 
   // 4. Generate matches

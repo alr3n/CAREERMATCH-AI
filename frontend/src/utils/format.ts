@@ -4,7 +4,7 @@ export const ARRANGEMENT_LABEL: Record<WorkArrangement | "unknown", string> = {
   remote: "Remote",
   hybrid: "Hybrid",
   onsite: "On-site",
-  unknown: "Arrangement not stated",
+  unknown: "Arrangement not specified",
 };
 
 export const EMPLOYMENT_LABEL: Record<EmploymentType | "unknown", string> = {
@@ -13,7 +13,7 @@ export const EMPLOYMENT_LABEL: Record<EmploymentType | "unknown", string> = {
   contract: "Contract",
   internship: "Internship",
   temporary: "Temporary",
-  unknown: "Type not stated",
+  unknown: "Employment type not specified",
 };
 
 export const LEVEL_LABEL: Record<ExperienceLevel, string> = {
@@ -21,7 +21,7 @@ export const LEVEL_LABEL: Record<ExperienceLevel, string> = {
   entry: "Entry level",
   mid: "Mid level",
   senior: "Senior",
-  unknown: "Level not stated",
+  unknown: "Level not specified",
 };
 
 export const STAGE_LABEL: Record<string, string> = {
@@ -59,8 +59,11 @@ export const COMPONENT_COLOR: Record<ComponentKey, string> = {
   profile_relevance: "bg-ledger-relevance",
 };
 
+/** Shown wherever a provider did not supply a value. Nothing is estimated. */
+export const NOT_SPECIFIED = "Not specified";
+
 export function formatDate(value: string | null | undefined): string {
-  if (!value) return "Not stated";
+  if (!value) return NOT_SPECIFIED;
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
   return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
@@ -82,10 +85,31 @@ export function formatSalary(min: string | null, max: string | null, currency: s
   if (!min && !max) return null;
   const fmt = (v: string) => Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 });
   const range = min && max ? `${fmt(min)}–${fmt(max)}` : fmt((min ?? max) as string);
-  const per = interval?.includes("year") ? "/year" : interval?.includes("month") ? "/month" : interval?.includes("hour") ? "/hour" : "";
+  const per = interval?.includes("year")
+    ? "/year"
+    : interval?.includes("month")
+      ? "/month"
+      : interval?.includes("week")
+        ? "/week"
+        : interval?.includes("day")
+          ? "/day"
+          : interval?.includes("hour")
+            ? "/hour"
+            : "";
   return `${currency ?? ""} ${range}${per}`.trim();
 }
 
 export function pct(value: number | null | undefined): string {
   return value === null || value === undefined ? "n/a" : `${Math.round(value * 100)}%`;
+}
+
+/** Salary as published: a structured range, else the provider's own text, else null. */
+export function salaryOf(job: {
+  salary_min: string | null;
+  salary_max: string | null;
+  salary_currency: string | null;
+  salary_interval: string | null;
+  salary_text: string | null;
+}): string | null {
+  return formatSalary(job.salary_min, job.salary_max, job.salary_currency, job.salary_interval) ?? job.salary_text ?? null;
 }

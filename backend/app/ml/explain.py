@@ -126,8 +126,6 @@ def build_evidence(profile: CandidateProfile, job: JobRecord, b: ScoreBreakdown,
     if job.freshness == "stale":
         ev.append(Evidence("caveat", "Listing not recently verified",
                            "This listing has not been re-checked recently and may have closed."))
-    if job.is_demo:
-        ev.append(Evidence("caveat", "DEMO DATA", "This is a fictional listing used for demonstration."))
     if (
         not req.missing and not pref.missing and not req.related and not pref.related
         and (req.score is not None or pref.score is not None)

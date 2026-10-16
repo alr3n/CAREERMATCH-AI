@@ -78,7 +78,6 @@ def job_record(job: JobListing) -> JobRecord:
         salary_interval=job.salary_interval,
         department=job.department,
         freshness=job_service.freshness(job.last_checked_at),
-        is_demo=job.is_demo,
     )
 
 
@@ -112,7 +111,7 @@ def run_matching(db: Session, user: User, request: MatchRequest) -> MatchRunOut:
     job_service.ensure_jobs_loaded(db)
 
     filters = JobFilters(**request.filters.model_dump())
-    stmt = repo.apply_filters(repo.visible_listings(), filters, user.id, settings.enable_demo_provider)
+    stmt = repo.apply_filters(repo.visible_listings(), filters, user.id)
     jobs = db.scalars(stmt.options(selectinload(JobListing.skills), selectinload(JobListing.source))).all()
 
     profile = candidate_from(resume, user)

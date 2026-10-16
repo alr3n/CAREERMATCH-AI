@@ -7,10 +7,25 @@ import { AuthProvider } from "../hooks/useAuth";
 import { api, tokenStore } from "../services/api";
 import { job } from "../test/fixtures";
 import type { Facets, Page, JobSummary, SourcesResponse } from "../types/api";
-import { JobsPage } from "./JobsPage";
+import { JobsPage, NO_LIVE_LISTINGS } from "./JobsPage";
 
-const facets: Facets = { total_active: 2, live_active: 0, demo_active: 2, categories: [], locations: [], skills: [], last_checked_at: null };
-const sources: SourcesResponse = { sources: [], providers: [], demo_enabled: true, unsupported_note: "No scraping." };
+const facets: Facets = {
+  total_active: 2,
+  with_salary: 1,
+  categories: [],
+  locations: [],
+  skills: [],
+  platforms: [{ value: "Lever", count: 2 }],
+  companies: [{ value: "Test Company", count: 2 }],
+  last_checked_at: new Date().toISOString(),
+};
+const sources: SourcesResponse = {
+  sources: [],
+  providers: [],
+  last_successful_refresh_at: null,
+  location_filter: "ph",
+  unsupported_note: "No scraping.",
+};
 const page = (items: JobSummary[]): Page<JobSummary> => ({ items, total: items.length, page: 1, page_size: 20 });
 
 function renderJobs() {
@@ -63,10 +78,44 @@ describe("JobsPage", () => {
     expect(await screen.findByText("Detail page")).toBeInTheDocument();
   });
 
+  it("searches by keyword from the search bar", async () => {
+    vi.spyOn(api, "listJobs").mockResolvedValue(page([job()]));
+    const search = vi.spyOn(api, "searchJobs").mockResolvedValue(page([job({ id: "job-9", title: "Grab Analyst" })]));
+    renderJobs();
+    await screen.findByText("1 listing");
+    await userEvent.type(screen.getByLabelText("Job title, keyword or company"), "Grab");
+    await userEvent.click(screen.getByRole("button", { name: "Search" }));
+    expect(await screen.findByText("Grab Analyst")).toBeInTheDocument();
+    expect(search).toHaveBeenCalledWith(expect.objectContaining({ q: "Grab", page: 1 }));
+    expect(screen.getByText(/Last updated/)).toBeInTheDocument();
+  });
+
+  it("says when no live listings are available instead of showing sample jobs", async () => {
+    vi.spyOn(api, "facets").mockResolvedValue({ ...facets, total_active: 0, platforms: [], last_checked_at: null });
+    vi.spyOn(api, "listJobs").mockResolvedValue(page([]));
+    renderJobs();
+    expect(await screen.findByText(NO_LIVE_LISTINGS)).toBeInTheDocument();
+    expect(screen.queryByRole("article")).not.toBeInTheDocument();
+  });
+
+  it("reports unavailable sources", async () => {
+    vi.spyOn(api, "sources").mockResolvedValue({
+      ...sources,
+      sources: [
+        { id: "s1", provider: "lever", identifier: "coins", display_name: "Coins", enabled: true, last_fetched_at: null,
+          last_status: "error", last_error: "The provider did not respond in time", last_fetch_count: null, active_listings: 3 },
+      ],
+    });
+    vi.spyOn(api, "listJobs").mockResolvedValue(page([job()]));
+    renderJobs();
+    expect(await screen.findByText("1 source is temporarily unavailable")).toBeInTheDocument();
+    expect(screen.getByText(/did not respond in time/)).toBeInTheDocument();
+  });
+
   it("shows an empty state and errors", async () => {
     vi.spyOn(api, "listJobs").mockResolvedValueOnce(page([]));
     renderJobs();
-    expect(await screen.findByText("No listings match these filters")).toBeInTheDocument();
+    expect(await screen.findByText("No listings match your search")).toBeInTheDocument();
     vi.spyOn(api, "searchJobs").mockRejectedValueOnce(new Error("Can't reach the CareerMatch AI server."));
     await userEvent.click(screen.getByRole("button", { name: "Apply filters" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Can't reach the CareerMatch AI server.");

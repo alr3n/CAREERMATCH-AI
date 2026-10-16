@@ -8,6 +8,7 @@ testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q"
 filterwarnings = ["ignore::DeprecationWarning"]
+markers = ["no_fixture_listings: run without the offline fixture provider (production-like provider set)"]
 
 [tool.ruff]
 line-length = 135

@@ -8,7 +8,6 @@ from collections import Counter, defaultdict
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.core.config import get_settings
 from app.core.errors import AppError
 from app.ml.learning_resources import demonstration_tip, project_idea_for, resources_for
 from app.ml.taxonomy import category_of
@@ -74,7 +73,7 @@ def gap_report(db: Session, user: User, run_id: uuid.UUID | None = None, top_k: 
             if len(examples[key]) < 3:
                 examples[key].append(GapExample(
                     job_id=job.id, title=job.title, company=job.company, requirement=s.requirement,
-                    evidence=s.evidence, is_demo=job.is_demo,
+                    evidence=s.evidence,
                 ))
     gaps = [
         SkillGap(
@@ -96,10 +95,7 @@ def gap_report(db: Session, user: User, run_id: uuid.UUID | None = None, top_k: 
     )
 
     # Frequency across every visible listing (not just the user's matches).
-    settings = get_settings()
     stmt = repo.visible_listings()
-    if not settings.enable_demo_provider:
-        stmt = stmt.where(JobListing.is_demo.is_(False))
     all_jobs = db.scalars(stmt.options(selectinload(JobListing.skills))).all()
     freq = Counter()
     for job in all_jobs:

@@ -31,7 +31,6 @@ from pathlib import Path
 from _common import ARTIFACTS, BENCHMARK, write_json
 
 from app.integrations.jobs.base import ProviderListing
-from app.integrations.jobs.demo import DemoProvider
 from app.ml import metrics as M
 from app.ml.baselines import keyword_overlap_scores, tfidf_cosine_scores
 from app.ml.embeddings import LSABackend, get_backend
@@ -265,11 +264,6 @@ def run_models(candidates, records, labels, semantic_backend, n_boot: int):
 
 def data_quality(parsed_jobs: dict) -> dict:
     listings = [p["data"] for p in parsed_jobs.values()]
-    demo = DemoProvider().fetch().listings
-    demo_norm = [normalise(d) for d in demo]
-    for d in demo_norm:
-        d.pop("_skills")
-
     def summary(items: list[dict]) -> dict:
         n = len(items)
         fps = [fingerprint(i["company"], i["title"], i["location"], i["description"]) for i in items]
@@ -285,7 +279,6 @@ def data_quality(parsed_jobs: dict) -> dict:
 
     return {
         "benchmark_jobs": summary(listings),
-        "demo_listings": summary(demo_norm),
         "not_measured": [
             "Working source links (needs network access to the providers; checked per refresh in production via HTTP status).",
             "Share of expired listings still displayed: expired listings are excluded by query; verify on a live database.",

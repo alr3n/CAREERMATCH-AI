@@ -68,10 +68,10 @@ export function LandingPage() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 md:px-8">
         <Logo />
         <nav aria-label="Site" className="flex items-center gap-2 text-sm">
-          <a href="#how" className="hidden px-3 py-2 text-ink no-underline hover:text-teal sm:inline">
+          <a href="#how" className="hidden min-h-11 items-center px-3 py-2 text-ink no-underline hover:text-teal sm:inline-flex">
             How it works
           </a>
-          <a href="#privacy" className="hidden px-3 py-2 text-ink no-underline hover:text-teal sm:inline">
+          <a href="#privacy" className="hidden min-h-11 items-center px-3 py-2 text-ink no-underline hover:text-teal sm:inline-flex">
             Privacy
           </a>
           <Link to="/login" className="btn-ghost no-underline">
@@ -182,9 +182,10 @@ export function LandingPage() {
             <div>
               <h2 className="text-2xl font-bold">Where the jobs come from</h2>
               <p className="mt-3 max-w-prose text-muted">
-                Listings are fetched from the public Greenhouse and Lever job boards of companies the site operator chooses to follow. Each one links
-                back to the employer's own posting and shows when it was last checked. We don't scrape LinkedIn, JobStreet or Indeed. Fictional demo
-                listings are always marked as demo data.
+                Listings are real postings retrieved from employers' public job boards (Greenhouse, Lever, SmartRecruiters), the Remotive remote-jobs
+                feed and, where configured, the JSearch job-search API, which includes postings published on LinkedIn, Indeed, Glassdoor and
+                JobStreet. Each listing names its source, links to the original posting and shows when it was last checked. We never scrape job
+                sites or show sample jobs.
               </p>
             </div>
             <div id="privacy">

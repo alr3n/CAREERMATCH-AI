@@ -53,7 +53,7 @@ export function MatchesPage() {
     const body: MatchRequest = {
       preset: preset === "custom" ? "balanced" : preset,
       weights: preset === "custom" ? custom : null,
-      filters: { employment_types: types, work_arrangements: arrangements, include_demo: true },
+      filters: { employment_types: types, work_arrangements: arrangements },
       limit: 50,
     };
     try {
@@ -181,7 +181,7 @@ export function MatchesPage() {
           <div className="mb-4 flex flex-wrap items-center gap-4 text-sm">
             <label className="flex items-center gap-2">
               Sort by
-              <select className="field-input w-auto py-1" value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
+              <select className="field-input w-auto" value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
                 <option value="score">Compatibility score</option>
                 <option value="checked">Recently checked</option>
                 <option value="title">Title</option>
@@ -189,7 +189,7 @@ export function MatchesPage() {
             </label>
             <label className="flex items-center gap-2">
               Minimum score
-              <select className="field-input w-auto py-1" value={minScore} onChange={(e) => setMinScore(Number(e.target.value))}>
+              <select className="field-input w-auto" value={minScore} onChange={(e) => setMinScore(Number(e.target.value))}>
                 <option value={0}>Any</option>
                 <option value={30}>30+</option>
                 <option value={50}>50+</option>

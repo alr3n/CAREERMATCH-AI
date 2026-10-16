@@ -35,7 +35,6 @@ class GapExample(BaseModel):
     company: str
     requirement: str
     evidence: str | None
-    is_demo: bool
 
 
 class SkillGap(BaseModel):

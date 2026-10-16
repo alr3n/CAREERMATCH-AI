@@ -18,7 +18,7 @@ from decimal import Decimal, InvalidOperation
 
 from pydantic import BaseModel, ValidationError
 
-from app.integrations.jobs.base import FetchResult, HttpJobProvider, ProviderListing, ProviderSchemaError
+from app.integrations.jobs.base import FetchResult, HttpJobProvider, ProviderListing, ProviderSchemaError, https_url
 from app.ml.job_parser import html_to_lines
 
 BASE_URLS = {"global": "https://api.lever.co/v0/postings", "eu": "https://api.eu.lever.co/v0/postings"}
@@ -73,6 +73,8 @@ def _decimal(value: float | int | None) -> Decimal | None:
 
 class LeverProvider(HttpJobProvider):
     provider = "lever"
+    platform = "Lever"
+    needs_location_filter = True  # sites list every office worldwide
 
     def __init__(self, *args, region: str = "global", **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -114,7 +116,9 @@ class LeverProvider(HttpJobProvider):
             external_id=p.id,
             title=p.text.strip(),
             company=self.display_name,
-            apply_url=p.hostedUrl,
+            apply_url=https_url(p.applyUrl) or p.hostedUrl,
+            posting_url=p.hostedUrl,
+            source_platform=self.platform,
             content_html=content_html or None,
             content_text=None if content_html else (p.descriptionPlain or ""),
             sections=sections,

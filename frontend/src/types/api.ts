@@ -181,12 +181,17 @@ export interface JobSummary {
   posted_at: string | null;
   deadline: string | null;
   apply_url: string;
+  /** Public page of the original posting (may equal apply_url). */
+  posting_url: string;
   last_checked_at: string;
   freshness: Freshness;
   status: string;
   provider: string;
+  /** Integration the listing was retrieved through, e.g. "Lever Postings API". */
+  provider_name: string;
   source_name: string;
-  is_demo: boolean;
+  /** Where the posting was published, e.g. "Lever" or "LinkedIn". */
+  source_platform: string;
   is_saved: boolean;
   required_skills: string[];
 }
@@ -204,6 +209,8 @@ export interface JobDetail extends JobSummary {
 
 export interface JobFilters {
   q?: string;
+  company?: string;
+  platforms?: string[];
   employment_types?: string[];
   work_arrangements?: string[];
   experience_levels?: string[];
@@ -212,8 +219,8 @@ export interface JobFilters {
   skills?: string[];
   salary_min?: number | null;
   salary_currency?: string | null;
+  has_salary?: boolean;
   checked_within_days?: number | null;
-  include_demo?: boolean;
   saved_only?: boolean;
   sort?: "recently_checked" | "posted" | "title";
   page?: number;
@@ -227,11 +234,12 @@ export interface FacetCount {
 
 export interface Facets {
   total_active: number;
-  live_active: number;
-  demo_active: number;
+  with_salary: number;
   categories: FacetCount[];
   locations: FacetCount[];
   skills: FacetCount[];
+  platforms: FacetCount[];
+  companies: FacetCount[];
   last_checked_at: string | null;
 }
 
@@ -240,7 +248,6 @@ export interface JobSource {
   provider: string;
   identifier: string;
   display_name: string;
-  is_demo: boolean;
   enabled: boolean;
   last_fetched_at: string | null;
   last_status: string;
@@ -256,13 +263,15 @@ export interface ProviderStatus {
   sources: string[];
   docs: string;
   notes: string;
+  access: string;
   config_variable: string;
 }
 
 export interface SourcesResponse {
   sources: JobSource[];
   providers: ProviderStatus[];
-  demo_enabled: boolean;
+  last_successful_refresh_at: string | null;
+  location_filter: string;
   unsupported_note: string;
 }
 
@@ -276,6 +285,7 @@ export interface RefreshItem {
   expired: number;
   duplicates: number;
   skipped_invalid: number;
+  filtered_out: number;
   message: string | null;
 }
 
@@ -372,7 +382,6 @@ export interface MatchRequest {
     experience_levels?: string[];
     categories?: string[];
     location?: string | null;
-    include_demo?: boolean;
   };
   limit?: number;
 }
@@ -399,7 +408,6 @@ export interface GapExample {
   company: string;
   requirement: Requirement;
   evidence: string | null;
-  is_demo: boolean;
 }
 
 export interface SkillGap {

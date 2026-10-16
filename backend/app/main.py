@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -10,13 +13,26 @@ from app.api.routes.health import router as health_router
 from app.core.config import get_settings
 from app.core.errors import register_error_handlers
 from app.core.logging import configure_logging
+from app.services.refresh_scheduler import RefreshScheduler
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging()
 
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        scheduler = RefreshScheduler(settings) if settings.app_env != "test" else None
+        if scheduler:
+            scheduler.start()
+        try:
+            yield
+        finally:
+            if scheduler:
+                scheduler.stop()
+
     app = FastAPI(
+        lifespan=lifespan,
         title=settings.app_name,
         version="0.1.0",
         description=(

@@ -60,11 +60,11 @@ These errors were **not** fixed by tuning the extractor against the benchmark. D
 
 **Why extraction scores are high.** The same author wrote the taxonomy, the resumes and the gold annotations, so vocabulary overlap is much higher than with real resumes. Expect substantially lower recall on real documents.
 
-## Job data quality (measured on benchmark postings and demo listings)
+## Job data quality
 
-From `data_quality` in the report: duplicate rate 0% for both sets; 100% of apply links use HTTPS; the share of `unknown` work arrangement, employment type and experience level is reported per set; locations are present for every listing.
+From `data_quality` in the report (benchmark postings): duplicate rate 0%; 100% of apply links use HTTPS; the share of `unknown` work arrangement, employment type and experience level is reported; locations are present for every listing.
 
-**Not measured:** working source links (needs network access to the providers) and the share of expired listings still displayed (they're excluded by query; verify on a live database).
+**Live listings (2026-10-16, `scripts/live_source_check.py`):** 261 postings stored from 12 sources, 259 visible after hiding 2 cross-source duplicates; 0 demo or `example.com` rows; 0 non-HTTPS links; 24 of 24 sampled original-posting links answered HTTP 200. Field completeness varies by provider: location 100%, posting date 100%, salary only from Remotive (50% of its listings) because the employer boards rarely publish pay, and employment type unknown for Greenhouse (no such field). Re-run the *Live job sources* workflow for current figures.
 
 ## System performance (measured, indicative)
 

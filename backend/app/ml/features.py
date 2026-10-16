@@ -92,7 +92,6 @@ class JobRecord:
     salary_interval: str | None = None
     department: str | None = None
     freshness: str = "fresh"
-    is_demo: bool = False
 
     def document(self) -> str:
         return f"{self.title}\n{self.description[:6000]}"

@@ -32,7 +32,7 @@ export function AppShell() {
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `block rounded px-3 py-2 text-sm no-underline ${isActive ? "bg-teal-tint font-semibold text-teal-dark" : "text-ink hover:bg-paper"}`
+                `flex min-h-10 items-center rounded px-3 py-2 text-sm no-underline max-lg:min-h-11 pointer-coarse:min-h-11 ${isActive ? "bg-teal-tint font-semibold text-teal-dark" : "text-ink hover:bg-paper"}`
               }
             >
               {item.label}
@@ -44,11 +44,11 @@ export function AppShell() {
   );
 
   return (
-    <div className="min-h-screen md:flex">
+    <div className="min-h-screen lg:flex">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-surface focus:px-3 focus:py-2">
         Skip to content
       </a>
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-line bg-surface px-4 py-6 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col overflow-y-auto border-r border-line bg-surface px-4 py-6 lg:flex">
         <Link to="/app" className="no-underline">
           <Logo className="px-3" />
         </Link>
@@ -57,12 +57,12 @@ export function AppShell() {
           <p className="truncate text-muted" title={profile?.user.email}>
             {profile?.user.email}
           </p>
-          <button type="button" onClick={logout} className="mt-2 text-teal underline-offset-2 hover:underline">
+          <button type="button" onClick={logout} className="mt-1 min-h-10 text-teal underline-offset-2 hover:underline pointer-coarse:min-h-11">
             Sign out
           </button>
         </div>
       </aside>
-      <header className="flex items-center justify-between border-b border-line bg-surface px-4 py-3 md:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-line bg-surface px-4 py-2 sm:px-6 lg:hidden">
         <Link to="/app" className="no-underline">
           <Logo />
         </Link>
@@ -71,14 +71,20 @@ export function AppShell() {
         </button>
       </header>
       {open && (
-        <div id="mobile-nav" className="border-b border-line bg-surface px-4 py-3 md:hidden">
+        <div
+          id="mobile-nav"
+          className="sticky top-[3.75rem] z-20 max-h-[calc(100dvh-3.75rem)] overflow-y-auto border-b border-line bg-surface px-4 py-3 shadow-sm sm:px-6 lg:hidden"
+        >
           {nav}
-          <button type="button" onClick={logout} className="mt-3 px-3 text-sm text-teal">
-            Sign out
-          </button>
+          <div className="mt-3 border-t border-line px-3 pt-3 text-sm">
+            <p className="truncate text-muted">{profile?.user.email}</p>
+            <button type="button" onClick={logout} className="mt-1 min-h-11 text-teal">
+              Sign out
+            </button>
+          </div>
         </div>
       )}
-      <main id="main" className="min-w-0 flex-1 px-4 py-6 md:px-10 md:py-10">
+      <main id="main" className="min-w-0 flex-1 px-4 py-6 sm:px-6 md:px-8 md:py-8 lg:px-10 lg:py-10">
         <div className="mx-auto max-w-6xl">
           <Suspense fallback={<LoadingState />}>
             <Outlet />

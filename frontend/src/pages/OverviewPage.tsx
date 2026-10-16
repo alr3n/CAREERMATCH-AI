@@ -30,7 +30,11 @@ export function OverviewPage() {
   const p = profile.profile;
 
   const stats = [
-    { label: "Open listings", value: facets.total_active, note: facets.demo_active ? `${facets.demo_active} are demo listings` : "from configured job boards" },
+    {
+      label: "Open listings",
+      value: facets.total_active,
+      note: facets.platforms.length ? `from ${facets.platforms.map((p) => p.value).slice(0, 3).join(", ")}${facets.platforms.length > 3 ? " and more" : ""}` : "no live listings yet",
+    },
     { label: "Relevant to you", value: matches.run_id ? relevant : "–", note: matches.run_id ? `scored ${RELEVANT_THRESHOLD}+ in your latest run` : "run matching to see this" },
     { label: "Saved jobs", value: saved.total, note: "kept for later" },
     { label: "Last search", value: history.items[0] ? timeAgo(history.items[0].created_at) : "–", note: history.items[0] ? formatDate(history.items[0].created_at) : "no searches yet" },
@@ -88,7 +92,6 @@ export function OverviewPage() {
                     </Link>
                     <p className="truncate text-sm text-muted">
                       {m.job.company}
-                      {m.job.is_demo ? " (demo)" : ""}
                     </p>
                   </div>
                 </li>

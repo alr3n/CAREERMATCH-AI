@@ -1,11 +1,10 @@
-"""DEMO DATA provider — fictional listings for offline demonstrations.
+"""Offline test fixture: fictional job listings for the automated test suite.
 
-Every company here is invented and every listing is labelled as demo data
-throughout the API and UI (``is_demo = true``). Application links point to the
-reserved ``example.com`` domain. This provider is disabled automatically when
-``APP_ENV=production`` and can be turned off with ``ENABLE_DEMO_PROVIDER=false``.
-It exists so the full workflow can be exercised and tested without network
-access; it must never be presented as real vacancies.
+TEST USE ONLY. This module lives under ``backend/tests`` and is never imported
+by the application. ``conftest.py`` injects ``FixtureProvider`` into the
+provider registry for tests that need listings without network access. Every
+company is invented and every link points to the reserved ``example.com``
+domain.
 """
 
 from __future__ import annotations
@@ -14,8 +13,6 @@ from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
 from app.integrations.jobs.base import FetchResult, JobProvider, ProviderListing
-
-DEMO_SUFFIX = " (Demo – fictional)"
 
 
 def _job(
@@ -36,7 +33,7 @@ def _job(
     return locals()
 
 
-_DEMO_JOBS: tuple[dict, ...] = (
+_FIXTURE_JOBS: tuple[dict, ...] = (
     _job("da-intern-01", "Data Analyst Intern", "Bayanihan Analytics", "Makati, Metro Manila", "hybrid", "Internship",
          "Data", "Support our analytics team in turning operational data into insights.",
          ["Clean and prepare datasets for weekly reports", "Build dashboards for internal teams",
@@ -147,19 +144,18 @@ _DEMO_JOBS: tuple[dict, ...] = (
 )
 
 
-class DemoProvider(JobProvider):
-    provider = "demo"
-    is_demo = True
+class FixtureProvider(JobProvider):
+    provider = "fixture"
+    platform = "Test fixture"
 
     def __init__(self) -> None:
-        super().__init__("demo", "DEMO DATA (fictional listings)")
+        super().__init__("fixture", "Test fixture (fictional)")
 
     def fetch(self) -> FetchResult:
         now = datetime.now(UTC)
         listings = []
-        for job in _DEMO_JOBS:
+        for job in _FIXTURE_JOBS:
             html = (
-                f"<p><strong>DEMO DATA — this is a fictional listing for demonstration only.</strong></p>"
                 f"<p>{job['intro']}</p>"
                 "<h3>Responsibilities</h3><ul>" + "".join(f"<li>{x}</li>" for x in job["responsibilities"]) + "</ul>"
                 "<h3>Requirements</h3><ul>" + "".join(f"<li>{x}</li>" for x in job["requirements"]) + "</ul>"
@@ -170,8 +166,10 @@ class DemoProvider(JobProvider):
                 ProviderListing(
                     external_id=job["jid"],
                     title=job["title"],
-                    company=job["company"] + DEMO_SUFFIX,
-                    apply_url=f"https://example.com/demo-jobs/{job['jid']}",
+                    company=job["company"],
+                    apply_url=f"https://example.com/test-jobs/{job['jid']}",
+                    posting_url=f"https://example.com/test-jobs/{job['jid']}",
+                    source_platform=self.platform,
                     content_html=html,
                     location=job["location"],
                     country="PH",
