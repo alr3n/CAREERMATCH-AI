@@ -2,4 +2,5 @@
 # Hugging Face datasets are distributed as Parquet, which pandas reads via pyarrow.
 #   pip install -r backend/requirements-ml.txt
 -r requirements.txt
-pyarrow==18.1.0
+pyarrow==18.1.0; python_version < "3.14"
+pyarrow==22.0.0; python_version >= "3.14"

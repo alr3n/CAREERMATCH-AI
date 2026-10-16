@@ -57,6 +57,23 @@ jobs:
           assert a == b, "Committed evaluation report differs from a fresh run"
           EOF
 
+  backend-py314:
+    # Python 3.14 resolves newer pins (see backend/requirements.txt markers); make sure they keep working.
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ci-secret-key-that-is-long-enough-for-hs256
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: "pip install --only-binary=:all: -r requirements-dev.txt"
+      - name: Tests (SQLite)
+        run: pytest
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

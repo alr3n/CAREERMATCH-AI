@@ -70,7 +70,7 @@ docs/       architecture, schema, API, ML, evaluation, privacy, integrations, da
 ## Tech stack
 
 - **Frontend:** React 18, TypeScript 5.7, Vite 5, Tailwind CSS 3, React Router 6, React Hook Form + Zod, Radix Dialog, Recharts
-- **Backend:** Python 3.11+ (CI uses 3.12), FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, PyJWT, bcrypt, httpx
+- **Backend:** Python 3.11–3.14 (CI uses 3.12; 3.14 gets newer pins for packages that ship 3.14 wheels), FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, PyJWT, bcrypt, httpx
 - **Database:** PostgreSQL 16 (SQLite for tests and quick local runs)
 - **ML/NLP:** scikit-learn (TF-IDF, truncated SVD/LSA), NumPy, pandas; optional Sentence Transformers (`all-MiniLM-L6-v2`, pretrained, not fine-tuned)
 - **Documents:** PyMuPDF, python-docx
@@ -94,7 +94,7 @@ The backend container applies migrations on start.
 
 ### Option B: Local development
 
-Requirements: Python 3.11+, Node 22, PostgreSQL 16 (or SQLite).
+Requirements: Python 3.11–3.14, Node 22, PostgreSQL 16 (or SQLite).
 
 ```bash
 # Backend
