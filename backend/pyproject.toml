@@ -2,6 +2,32 @@
 name = "careermatch-ai-backend"
 version = "0.1.0"
 requires-python = ">=3.11"
+# Runtime deps (mirrors requirements.txt) so Vercel/uv install them from pyproject.toml.
+dependencies = [
+    'fastapi==0.115.6',
+    'uvicorn[standard]==0.32.1',
+    'pydantic==2.10.4; python_version < "3.14"',
+    'pydantic==2.12.5; python_version >= "3.14"',
+    'pydantic-settings==2.7.0',
+    'email-validator==2.2.0',
+    'SQLAlchemy==2.0.36; python_version < "3.14"',
+    'SQLAlchemy==2.0.44; python_version >= "3.14"',
+    'alembic==1.14.0',
+    'psycopg[binary]==3.2.3; python_version < "3.14"',
+    'psycopg[binary]==3.2.10; python_version >= "3.14"',
+    'PyJWT==2.10.1',
+    'bcrypt==4.2.1',
+    'python-multipart==0.0.20',
+    'httpx==0.28.1',
+    'PyMuPDF==1.25.1',
+    'python-docx==1.1.2',
+    'numpy==2.2.1; python_version < "3.14"',
+    'numpy==2.3.4; python_version >= "3.14"',
+    'pandas==2.2.3; python_version < "3.14"',
+    'pandas==2.3.3; python_version >= "3.14"',
+    'scikit-learn==1.6.0; python_version < "3.14"',
+    'scikit-learn==1.7.2; python_version >= "3.14"',
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
